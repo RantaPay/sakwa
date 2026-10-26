@@ -1,0 +1,33 @@
+@theme {
+  --color-background: #ffffff;
+  --color-surface: #ffffff;
+  --color-foreground: #18181b;
+  --color-muted: #57534e;
+  --color-muted-foreground: #78716c;
+  --color-border: #e7e5e4;
+  --color-ring: #166534;
+  --color-primary: #166534;
+  --color-primary-hover: #14532d;
+  --color-primary-foreground: #f7fee7;
+  --color-primary-soft: #dcfce7;
+  --color-accent: #d4a72c;
+  --color-accent-foreground: #1c1917;
+  --color-accent-soft: #fbf3dc;
+  --color-success: #166534;
+  --color-warning: #b45309;
+  --color-danger: #b91c1c;
+  --color-info: #1d4ed8;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "Cascadia Code", monospace;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --shadow-whisper: 0 20px 40px -24px rgb(24 24 27 / 0.12);
+  --ease-sakwa: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root {
+  color-scheme: light;
+}

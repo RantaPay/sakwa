@@ -1,0 +1,7 @@
+{
+  "extends": "@sakwa/config/typescript/base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  },
+  "include": ["src"]
+}

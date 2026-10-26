@@ -1,0 +1,17 @@
+{
+  "name": "Sakwa Agro Enterprise",
+  "short_name": "Sakwa Agro",
+  "description": "Books for rice and money at Sakwa Agro Enterprise.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#166534",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@import "@sakwa/ui/tokens.css";
+
+@source "../../../packages/ui/src";
+@source "../**/*.{ts,tsx}";
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
