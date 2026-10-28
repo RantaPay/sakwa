@@ -25,7 +25,8 @@ export function useAgentDeliveries(agentId: string | undefined) {
     mutationFn: recordDelivery,
     onSuccess: () => {
       void client.invalidateQueries({ queryKey });
-      toast.success("Delivery saved. It will send when you are online.");
+      void client.invalidateQueries({ queryKey: ["agent-balance"] });
+      toast.success("Delivery recorded successfully.");
     },
     onError: (error: Error) => toast.error(error.message),
   });

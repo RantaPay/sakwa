@@ -15,9 +15,12 @@ export default function LoginPage() {
     event.preventDefault();
     setError("");
     const form = new FormData(event.currentTarget);
+    const rawEmail = String(form.get("email") ?? "").trim();
+    const rawPassword = String(form.get("password") ?? "");
+    const email = demo && rawEmail && !rawEmail.includes("@") ? `${rawEmail}@gmail.com` : rawEmail;
     const parsed = loginSchema.safeParse({
-      email: String(form.get("email") ?? ""),
-      password: String(form.get("password") ?? ""),
+      email,
+      password: rawPassword,
     });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Check your details.");
@@ -64,7 +67,9 @@ export default function LoginPage() {
     <main className="flex flex-1 flex-col justify-center py-16">
       <h1 className="text-3xl font-extrabold tracking-tight">Sign in</h1>
       <p className="mt-2 text-sm text-muted">
-        Use the email given to you by Sakwa Agro Enterprise.
+        {demo
+          ? "Demo credentials: <role>@gmail.com with password <role> (e.g. agent@gmail.com / agent)."
+          : "Use the email given to you by Sakwa Agro Enterprise."}
       </p>
       <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-4" noValidate>
         <Field label="Email" htmlFor="email">

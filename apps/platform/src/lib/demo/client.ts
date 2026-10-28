@@ -1,4 +1,5 @@
 import { DEMO_ACCOUNTS, type DemoAccount } from "./accounts";
+import { DEMO_TABLE_DATA } from "./mock-data";
 
 type QueryResult = { data: unknown; error: null; count: number };
 type Filter = { field: string; value: unknown; op: "eq" | "in" };
@@ -37,23 +38,8 @@ function rowsFor(table: string, session: DemoAccount | null, filters: Filter[]) 
     return rows.filter((row) => matches(row, filters));
   }
 
-  if (table === "warehouses") {
-    const rows = [
-      { id: "11111111-1111-1111-1111-111111111111", name: "Main store", location: "Kaduna", is_active: true },
-      { id: "22222222-2222-2222-2222-222222222222", name: "Second store", location: "Kano", is_active: true },
-    ];
-    return rows.filter((row) => matches(row, filters));
-  }
-
-  if (table === "warehouse_staff") {
-    const rows = [
-      { warehouse_id: "11111111-1111-1111-1111-111111111111", user_id: "a0000000-0000-4000-8000-000000000004" },
-      { warehouse_id: "22222222-2222-2222-2222-222222222222", user_id: "a0000000-0000-4000-8000-000000000004" },
-    ];
-    return rows.filter((row) => matches(row, filters));
-  }
-
-  return [];
+  const dataset = (DEMO_TABLE_DATA[table] as Record<string, unknown>[]) ?? [];
+  return dataset.filter((row) => matches(row, filters));
 }
 
 function createQuery(table: string, session: DemoAccount | null) {

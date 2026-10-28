@@ -21,49 +21,49 @@ begin
       values
         (
           'a0000000-0000-4000-8000-000000000001'::uuid,
-          'admin@sakwaagro.com',
+          'admin@gmail.com',
           'Demo Admin',
           '08000000001',
           'admin'
         ),
         (
           'a0000000-0000-4000-8000-000000000002'::uuid,
-          'director@sakwaagro.com',
+          'director@gmail.com',
           'Demo Director',
           '08000000002',
           'director'
         ),
         (
           'a0000000-0000-4000-8000-000000000003'::uuid,
-          'accountant@sakwaagro.com',
+          'accountant@gmail.com',
           'Demo Accountant',
           '08000000003',
           'accountant'
         ),
         (
           'a0000000-0000-4000-8000-000000000004'::uuid,
-          'store@sakwaagro.com',
+          'store@gmail.com',
           'Demo Store',
           '08000000004',
           'warehouse'
         ),
         (
           'a0000000-0000-4000-8000-000000000005'::uuid,
-          'buyer@sakwaagro.com',
-          'Demo Field Buyer',
+          'agent@gmail.com',
+          'Demo Agent',
           '08000000005',
           'agent'
         ),
         (
           'a0000000-0000-4000-8000-000000000006'::uuid,
-          'investor@sakwaagro.com',
+          'investor@gmail.com',
           'Demo Investor',
           '08000000006',
           'investor'
         ),
         (
           'a0000000-0000-4000-8000-000000000007'::uuid,
-          'customer@sakwaagro.com',
+          'customer@gmail.com',
           'Demo Customer',
           '08000000007',
           'customer'

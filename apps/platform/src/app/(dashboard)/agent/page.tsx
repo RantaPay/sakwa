@@ -26,7 +26,7 @@ export default function AgentHomePage() {
   return (
     <div>
       <PageHeading
-        title="Field buyer"
+        title="Agent"
         body="See cash received, record deliveries, and watch your running balance."
       />
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2">

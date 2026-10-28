@@ -18,7 +18,7 @@ export function DeliveryList() {
       emptyTitle="No deliveries yet"
       emptyBody="Record bags you took to a store. They wait for confirmation."
     >
-      <ul className="divide-y divide-border rounded-lg border border-border">
+      <ul className="divide-y divide-border rounded-xl border border-border bg-white">
         {(data ?? []).map((row) => (
           <li key={row.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
             <div>
