@@ -14,6 +14,10 @@ export {
   investmentSchema,
   withdrawalSchema,
   withdrawalDecisionSchema,
+  investmentRequestSchema,
+  marketPriceSchema,
+  weeklyInterestSchema,
+  receiptUploadSchema,
 } from "./money-records";
 export { createUserSchema, warehouseSchema, warehouseStaffSchema } from "./users";
 export {

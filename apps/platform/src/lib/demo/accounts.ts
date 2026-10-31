@@ -101,23 +101,72 @@ export function matchDemoAccount(email: string, password: string) {
   return account;
 }
 
+const SESSION_KEY = "sakwa-demo-session-user";
+
 export function parseDemoCookie(value: string | undefined): DemoAccount | null {
   if (!value) return null;
-  const tryParse = (raw: string) => {
-    const parsed = JSON.parse(raw) as DemoAccount;
-    return DEMO_ACCOUNTS.find((row) => row.id === parsed.id) ?? null;
-  };
-  try {
-    return tryParse(decodeURIComponent(value));
-  } catch {
+  let current = value.trim();
+  if (current.startsWith('"') && current.endsWith('"')) {
+    current = current.slice(1, -1);
+  }
+  for (let step = 0; step < 4; step += 1) {
     try {
-      return tryParse(value);
+      const parsed = JSON.parse(current) as DemoAccount;
+      return DEMO_ACCOUNTS.find((row) => row.id === parsed.id) ?? null;
     } catch {
-      return null;
+      try {
+        const next = decodeURIComponent(current);
+        if (next === current) return null;
+        current = next;
+      } catch {
+        return null;
+      }
     }
   }
+  return null;
 }
 
 export function encodeDemoCookie(account: DemoAccount) {
   return encodeURIComponent(JSON.stringify(account));
+}
+
+export function writeDemoSession(account: DemoAccount) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(SESSION_KEY, JSON.stringify(account));
+}
+
+export function clearDemoSession() {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(SESSION_KEY);
+}
+
+function readDemoSessionLocal(): DemoAccount | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as DemoAccount;
+    return DEMO_ACCOUNTS.find((row) => row.id === parsed.id) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export function readDemoSessionFromCookieHeader(header: string | null): DemoAccount | null {
+  if (!header) return null;
+  const parts = header.split(";").map((part) => part.trim());
+  const match = parts.find((part) => part.startsWith(`${DEMO_COOKIE}=`));
+  if (!match) return null;
+  return parseDemoCookie(match.slice(DEMO_COOKIE.length + 1));
+}
+
+export function readDemoSessionFromDocument(): DemoAccount | null {
+  if (typeof document !== "undefined") {
+    const fromCookie = readDemoSessionFromCookieHeader(document.cookie);
+    if (fromCookie) {
+      writeDemoSession(fromCookie);
+      return fromCookie;
+    }
+  }
+  return readDemoSessionLocal();
 }

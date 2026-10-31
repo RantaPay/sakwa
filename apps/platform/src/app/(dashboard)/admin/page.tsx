@@ -1,31 +1,35 @@
-import { PageHeading } from "@/components/page-heading";
-import { createServerSupabase } from "@/lib/supabase/server";
+"use client";
 
-export default async function AdminHomePage() {
-  const supabase = await createServerSupabase();
-  const { count: people } = await supabase
-    .from("profiles")
-    .select("id", { count: "exact", head: true });
-  const { count: stores } = await supabase
-    .from("warehouses")
-    .select("id", { count: "exact", head: true });
+import { useQuery } from "@tanstack/react-query";
+import { DashboardHome } from "@/components/dashboard-home";
+import { WelcomeCard } from "@/components/welcome-card";
+import { OverviewBoard } from "@/features/overview";
+import { PriceCard } from "@/features/prices/price-card";
+import { listWarehouses } from "@/features/stock";
+import { listUsers } from "@/features/users";
+import { queryKeys } from "@/lib/query-keys";
+
+export default function AdminHomePage() {
+  const people = useQuery({ queryKey: queryKeys.users, queryFn: listUsers });
+  const stores = useQuery({ queryKey: queryKeys.warehouses, queryFn: listWarehouses });
 
   return (
-    <div>
-      <PageHeading
-        title="Admin"
-        body="Create people, assign roles, and open stores. You do not handle rice or money here."
-      />
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <a href="/admin/users" className="rounded-lg border border-border p-5">
-          <p className="text-sm text-muted">People</p>
-          <p className="mt-2 font-mono text-3xl">{people ?? 0}</p>
-        </a>
-        <a href="/admin/warehouses" className="rounded-lg border border-border p-5">
-          <p className="text-sm text-muted">Stores</p>
-          <p className="mt-2 font-mono text-3xl">{stores ?? 0}</p>
-        </a>
+    <DashboardHome
+      greeting={
+        <WelcomeCard
+          role="admin"
+          body="The whole house is on this page. People, stores, bags, and money, in one view."
+          stats={[
+            { label: "People", value: `${people.data?.length ?? 0}` },
+            { label: "Stores", value: `${stores.data?.length ?? 0}` },
+          ]}
+        />
+      }
+    >
+      <div className="space-y-4 xl:space-y-5">
+        <PriceCard />
+        <OverviewBoard />
       </div>
-    </div>
+    </DashboardHome>
   );
 }

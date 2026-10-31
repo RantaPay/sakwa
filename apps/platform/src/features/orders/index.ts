@@ -4,8 +4,8 @@ export {
   placeOrder,
   setOrderPrice,
   setOrderStatus,
-} from "./services/orders";
-export { useCustomerOrders, useAllOrders } from "./hooks/use-orders";
-export { OrderForm } from "./components/order-form";
-export { OrderList } from "./components/order-list";
-export { OrderPriceList } from "./components/order-price-list";
+} from "./orders";
+export { useCustomerOrders, useAllOrders } from "./use-orders";
+export { OrderForm } from "./order-form";
+export { OrderList } from "./order-list";
+export { OrderPriceList } from "./order-price-list";

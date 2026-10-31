@@ -11,6 +11,8 @@ const MAP: Record<string, { tone: "green" | "gold" | "stone" | "warning" | "dang
     dispatched: { tone: "gold", label: "On the way" },
     delivered: { tone: "green", label: "Delivered" },
     requested: { tone: "warning", label: "Requested" },
+    accepted: { tone: "gold", label: "Accepted" },
+    receipt_sent: { tone: "warning", label: "Receipt in" },
     approved: { tone: "green", label: "Approved" },
     paid: { tone: "green", label: "Paid" },
     new: { tone: "gold", label: "New" },

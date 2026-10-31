@@ -5,6 +5,7 @@ export default function WarehouseReleasesPage() {
   return (
     <div>
       <PageHeading
+        mark="outgoing"
         title="Outgoing"
         body="Release bags after payment is confirmed. This marks the order delivered."
       />

@@ -1,6 +1,6 @@
 # @sakwa/platform
 
-Role dashboards at app.sakwaagro.com. PWA with an offline outbox for field buyers and store staff.
+Role dashboards at app.sakwaagro.com. PWA with an offline outbox for agents and store staff.
 
 ```bash
 pnpm --filter @sakwa/platform dev

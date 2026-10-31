@@ -1,11 +1,14 @@
 "use client";
 
-import { StatCard } from "@sakwa/ui";
 import { agentBalanceLabel, formatNaira } from "@sakwa/utils";
 import { useQuery } from "@tanstack/react-query";
-import { PageHeading } from "@/components/page-heading";
+import { DashboardHome } from "@/components/dashboard-home";
+import { WelcomeCard } from "@/components/welcome-card";
 import { getAgentBalance } from "@/features/advances";
-import { useAuthUser } from "@/hooks/use-auth-user";
+import { GrantedHome } from "@/features/permissions/home-sections";
+import { listMarketPrices } from "@/features/prices/market-prices";
+import { queryKeys } from "@/lib/query-keys";
+import { useAuthUser } from "@/lib/use-auth-user";
 
 const LABEL = {
   cash_left: "Cash with you",
@@ -20,22 +23,29 @@ export default function AgentHomePage() {
     enabled: Boolean(user?.id),
     queryFn: () => getAgentBalance(user?.id as string),
   });
+  const rates = useQuery({ queryKey: queryKeys.marketPrices, queryFn: listMarketPrices });
   const kobo = BigInt(balance.data?.balance_kobo ?? 0);
   const kind = agentBalanceLabel(kobo);
+  const latest = rates.data?.[0];
 
   return (
-    <div>
-      <PageHeading
-        title="Agent"
-        body="See cash received, record deliveries, and watch your running balance."
-      />
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-        <StatCard label={LABEL[kind]} value={formatNaira(kobo < 0n ? -kobo : kobo)} gold />
-        <StatCard
-          label="Cash given"
-          value={formatNaira(balance.data?.advanced_kobo ?? 0)}
+    <DashboardHome
+      greeting={
+        <WelcomeCard
+          role="agent"
+          body="See cash with you, follow the buying price, and record bags sent to a store."
+          stats={[
+            { label: LABEL[kind], value: formatNaira(kobo < 0n ? -kobo : kobo), gold: true },
+            { label: "Cash given", value: formatNaira(balance.data?.advanced_kobo ?? 0) },
+            {
+              label: "Buying per kg",
+              value: latest ? formatNaira(latest.buying_price_per_kg_kobo) : "Not set",
+            },
+          ]}
         />
-      </div>
-    </div>
+      }
+    >
+      <GrantedHome role="agent" />
+    </DashboardHome>
   );
 }

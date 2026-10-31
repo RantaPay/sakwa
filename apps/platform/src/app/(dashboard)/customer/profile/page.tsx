@@ -4,7 +4,7 @@ import { ProfileForm } from "@/features/users";
 export default function CustomerProfilePage() {
   return (
     <div>
-      <PageHeading title="Profile" body="Keep your name and phone current." />
+      <PageHeading mark="profile" title="Profile" body="Keep the details for your role current." />
       <ProfileForm />
     </div>
   );

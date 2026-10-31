@@ -2,8 +2,13 @@ import { isRole, type Role } from "@sakwa/types";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { BottomNav } from "@/components/shell/bottom-nav";
+import { DashboardFrame } from "@/components/shell/dashboard-frame";
 import { Sidebar } from "@/components/shell/sidebar";
 import { Topbar } from "@/components/shell/topbar";
+import { actingRole } from "@/features/permissions/access";
+import { PermissionGate } from "@/features/permissions/gate";
+import { loadGrants } from "@/features/permissions/load-grants";
+import { PermissionProvider } from "@/features/permissions/provider";
 import { createServerSupabase } from "@/lib/supabase/server";
 
 export default async function DashboardLayout({
@@ -28,9 +33,9 @@ export default async function DashboardLayout({
 
   const headerList = await headers();
   const path = headerList.get("x-pathname") ?? "";
-  const fromPath = held.find((role) => path.includes(`/${role}`));
-  const active = fromPath ?? held[0];
+  const active = actingRole(path, held);
   if (!active) redirect("/login");
+  const grants = await loadGrants();
 
   const { count } = await supabase
     .from("notifications")
@@ -39,13 +44,17 @@ export default async function DashboardLayout({
     .is("read_at", null);
 
   return (
-    <div className="flex min-h-[100dvh]">
-      <Sidebar role={active} />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar roles={held} activeRole={active} unread={count ?? 0} />
-        <div className="flex-1 px-4 py-6 pb-24 lg:px-8 lg:pb-8">{children}</div>
+    <PermissionProvider initial={grants}>
+      <div className="flex h-[100dvh] overflow-hidden">
+        <Sidebar role={active} />
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <Topbar roles={held} activeRole={active} unread={count ?? 0} />
+          <PermissionGate role={active}>
+            <DashboardFrame role={active}>{children}</DashboardFrame>
+          </PermissionGate>
+        </div>
+        <BottomNav role={active} />
       </div>
-      <BottomNav role={active} />
-    </div>
+    </PermissionProvider>
   );
 }

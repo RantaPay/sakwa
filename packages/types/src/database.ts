@@ -1,7 +1,10 @@
 export type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
 
-export type Database = {
-  public: {
+type WithRelationships<T> = {
+  [K in keyof T]: T[K] & { Relationships: [] };
+};
+
+type PublicSchema = {
     Tables: {
       profiles: {
         Row: {
@@ -11,6 +14,13 @@ export type Database = {
           email: string;
           is_active: boolean;
           primary_role: string;
+          avatar_url: string | null;
+          area: string | null;
+          bank_name: string | null;
+          account_name: string | null;
+          account_number: string | null;
+          shop_name: string | null;
+          address: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -21,6 +31,13 @@ export type Database = {
           email: string;
           is_active?: boolean;
           primary_role: string;
+          avatar_url?: string | null;
+          area?: string | null;
+          bank_name?: string | null;
+          account_name?: string | null;
+          account_number?: string | null;
+          shop_name?: string | null;
+          address?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -166,6 +183,7 @@ export type Database = {
           bag_count: number;
           kg_per_bag: string;
           price_per_bag_kobo: number;
+          price_per_kg_kobo: number;
           status: string;
           delivery_details: string;
           notes: string | null;
@@ -181,6 +199,7 @@ export type Database = {
           bag_count: number;
           kg_per_bag: string;
           price_per_bag_kobo: number;
+          price_per_kg_kobo?: number;
           status?: string;
           delivery_details: string;
           notes?: string | null;
@@ -297,6 +316,14 @@ export type Database = {
           reviewed_at: string | null;
           paid_by: string | null;
           paid_at: string | null;
+          payout_bank_name: string | null;
+          payout_account_name: string | null;
+          payout_account_number: string | null;
+          receipt_url: string | null;
+          receipt_filename: string | null;
+          receipt_uploaded_at: string | null;
+          received_by: string | null;
+          received_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -311,6 +338,14 @@ export type Database = {
           reviewed_at?: string | null;
           paid_by?: string | null;
           paid_at?: string | null;
+          payout_bank_name?: string | null;
+          payout_account_name?: string | null;
+          payout_account_number?: string | null;
+          receipt_url?: string | null;
+          receipt_filename?: string | null;
+          receipt_uploaded_at?: string | null;
+          received_by?: string | null;
+          received_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -379,6 +414,115 @@ export type Database = {
         };
         Update: Partial<Database["public"]["Tables"]["enquiry_rate_limits"]["Insert"]>;
       };
+      investment_requests: {
+        Row: {
+          id: string;
+          investor_id: string;
+          amount_kobo: number;
+          notes: string | null;
+          status: string;
+          rejection_reason: string | null;
+          reviewed_by: string | null;
+          reviewed_at: string | null;
+          receipt_url: string | null;
+          receipt_filename: string | null;
+          receipt_uploaded_at: string | null;
+          confirmed_by: string | null;
+          confirmed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          investor_id: string;
+          amount_kobo: number;
+          notes?: string | null;
+          status?: string;
+          rejection_reason?: string | null;
+          reviewed_by?: string | null;
+          reviewed_at?: string | null;
+          receipt_url?: string | null;
+          receipt_filename?: string | null;
+          receipt_uploaded_at?: string | null;
+          confirmed_by?: string | null;
+          confirmed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["investment_requests"]["Insert"]>;
+      };
+      role_permissions: {
+        Row: {
+          id: string;
+          role: string;
+          feature_id: string;
+          enabled: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          role: string;
+          feature_id: string;
+          enabled: boolean;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["role_permissions"]["Insert"]>;
+      };
+      buying_rates: {
+        Row: {
+          id: string;
+          price_per_bag_kobo: number;
+          effective_on: string;
+          notes: string | null;
+          recorded_by: string;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          price_per_bag_kobo: number;
+          effective_on: string;
+          notes?: string | null;
+          recorded_by: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["buying_rates"]["Insert"]>;
+      };
+      market_prices: {
+        Row: {
+          id: string;
+          buying_price_per_kg_kobo: number;
+          selling_price_per_kg_kobo: number;
+          effective_on: string;
+          notes: string | null;
+          recorded_by: string;
+          created_at: string;
+        };
+        Insert: {
+          id: string;
+          buying_price_per_kg_kobo: number;
+          selling_price_per_kg_kobo: number;
+          effective_on: string;
+          notes?: string | null;
+          recorded_by: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["market_prices"]["Insert"]>;
+      };
+      house_settings: {
+        Row: {
+          id: string;
+          weekly_interest_bps: number;
+          updated_by: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          weekly_interest_bps: number;
+          updated_by?: string | null;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["house_settings"]["Insert"]>;
+      };
       audit_log: {
         Row: {
           id: string;
@@ -435,5 +579,13 @@ export type Database = {
     };
     Functions: Record<string, never>;
     Enums: Record<string, never>;
+};
+
+export type Database = {
+  public: {
+    Tables: WithRelationships<PublicSchema["Tables"]>;
+    Views: WithRelationships<PublicSchema["Views"]>;
+    Functions: PublicSchema["Functions"];
+    Enums: PublicSchema["Enums"];
   };
 };

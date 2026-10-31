@@ -4,6 +4,8 @@ export {
   getProfile,
   updateProfile,
   setUserActive,
-} from "./services/users";
-export { createUserAction } from "./actions/create-user";
-export { ProfileForm } from "./components/profile-form";
+  createPersonLocal,
+} from "./users";
+export { createUserAction } from "./create-user";
+export { ProfileForm } from "./profile-form";
+export { PersonForm } from "./person-form";

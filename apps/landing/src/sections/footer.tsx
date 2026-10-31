@@ -3,7 +3,7 @@ import { loginHref, site, whatsappHref } from "@/lib/site";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-stone-50">
+    <footer className="border-t border-border bg-wash">
       <div className="mx-auto grid w-full max-w-[1400px] grid-cols-1 gap-10 px-4 py-16 md:grid-cols-12 md:px-8">
         <div className="md:col-span-5">
           <Wordmark className="text-base" />

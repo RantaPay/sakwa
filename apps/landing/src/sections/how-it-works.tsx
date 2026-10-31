@@ -7,7 +7,7 @@ const steps = [
   {
     n: "02",
     title: "Rice is bought",
-    body: "Field buyers receive cash, purchase rice, and bring the bags to a store.",
+    body: "Agents receive cash, purchase rice, and bring the bags to a store.",
   },
   {
     n: "03",

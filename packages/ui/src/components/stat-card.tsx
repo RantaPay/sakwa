@@ -18,11 +18,11 @@ export function StatCard({
         gold && "bg-accent-soft border-accent/30",
       )}
     >
-      <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">
+      <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted">
         {label}
       </p>
-      <p className="mt-2 font-mono text-2xl font-semibold text-foreground">{value}</p>
-      {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}
+      <p className="mt-2 font-mono text-3xl font-semibold text-foreground">{value}</p>
+      {hint ? <p className="mt-1 text-sm text-muted-foreground">{hint}</p> : null}
     </div>
   );
 }

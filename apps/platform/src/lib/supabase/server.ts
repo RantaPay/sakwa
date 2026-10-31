@@ -1,15 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { Database } from "@sakwa/types";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { DEMO_COOKIE, isDemoMode, parseDemoCookie } from "@/lib/demo/accounts";
 import { createDemoClient } from "@/lib/demo/client";
 
-export async function createServerSupabase(): Promise<SupabaseClient<Database>> {
-  if (isDemoMode()) {
-    const cookieStore = await cookies();
-    return createDemoClient(parseDemoCookie(cookieStore.get(DEMO_COOKIE)?.value)) as unknown as SupabaseClient<Database>;
-  }
+async function realServerClient() {
   const cookieStore = await cookies();
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -27,4 +22,14 @@ export async function createServerSupabase(): Promise<SupabaseClient<Database>> 
       },
     },
   );
+}
+
+export async function createServerSupabase() {
+  if (isDemoMode()) {
+    const cookieStore = await cookies();
+    return createDemoClient(parseDemoCookie(cookieStore.get(DEMO_COOKIE)?.value)) as unknown as Awaited<
+      ReturnType<typeof realServerClient>
+    >;
+  }
+  return realServerClient();
 }

@@ -5,6 +5,7 @@ export default function DirectorEnquiriesPage() {
   return (
     <div>
       <PageHeading
+        mark="enquiries"
         title="Enquiries"
         body="Messages from the public site. Mark them contacted or closed after you reply."
       />

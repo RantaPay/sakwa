@@ -4,9 +4,10 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { useEffect, useState } from "react";
 import { Toaster } from "sonner";
+import { RiceSplash } from "@/components/rice-splash";
 import { flushOutbox, pendingCount } from "@/lib/offline/sync";
 import { makeQueryClient } from "@/lib/query-client";
-import { useUiStore } from "@/stores/ui-store";
+import { useUiStore } from "@/lib/ui-store";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [client] = useState(() => makeQueryClient());
@@ -34,6 +35,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={client}>
         {children}
         <Toaster position="top-right" />
+        <RiceSplash />
       </QueryClientProvider>
     </NuqsAdapter>
   );

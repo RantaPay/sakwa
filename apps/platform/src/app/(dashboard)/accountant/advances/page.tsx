@@ -4,7 +4,7 @@ import { AdvanceForm, AdvanceList } from "@/features/advances";
 export default function AdvancesPage() {
   return (
     <div>
-      <PageHeading title="Cash given" body="Record cash given to a field buyer." />
+      <PageHeading mark="cash_given" title="Cash given" body="Record cash given to an agent." />
       <AdvanceForm />
       <AdvanceList />
     </div>

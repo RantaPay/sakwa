@@ -1,2 +1,3 @@
-export { transactionsWorkbook } from "./services/excel";
-export { transactionsPdf } from "./services/pdf";
+export { transactionsWorkbook } from "./excel";
+export { transactionsPdf } from "./pdf";
+export { ReportsPanel } from "./reports-panel";

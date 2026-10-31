@@ -5,8 +5,9 @@ export default function AccountantOrdersPage() {
   return (
     <div>
       <PageHeading
+        mark="orders"
         title="Orders"
-        body="Set the price per bag for each order. A store can be assigned here or later."
+        body="Set the price per kg for each order. A store can be assigned here or later."
       />
       <OrderPriceList />
     </div>

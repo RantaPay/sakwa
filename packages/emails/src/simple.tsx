@@ -10,7 +10,7 @@ export function SimpleNoticeEmail({
 }) {
   return (
     <EmailLayout preview={title}>
-      <Heading as="h1" style={{ fontSize: 22, color: "#18181B" }}>
+      <Heading as="h1" style={{ fontSize: 22, color: "#4C2922" }}>
         {title}
       </Heading>
       <Text>{body}</Text>

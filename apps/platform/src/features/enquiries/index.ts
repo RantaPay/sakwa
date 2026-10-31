@@ -1,2 +1,2 @@
-export { EnquiryList } from "./components/enquiry-list";
-export { useEnquiries } from "./hooks/use-enquiries";
+export { EnquiryList } from "./enquiry-list";
+export { useEnquiries } from "./use-enquiries";

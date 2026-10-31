@@ -16,7 +16,7 @@ export function EnquiryReceivedEmail({
 }) {
   return (
     <EmailLayout preview={`${name} sent an investor enquiry.`}>
-      <Heading as="h1" style={{ fontSize: 22, color: "#18181B" }}>
+      <Heading as="h1" style={{ fontSize: 22, color: "#4C2922" }}>
         New investor enquiry
       </Heading>
       <Text>Name: {name}</Text>

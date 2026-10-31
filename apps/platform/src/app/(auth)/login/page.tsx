@@ -1,9 +1,11 @@
 "use client";
 
-import { Button, Field, Input, PasswordInput } from "@sakwa/ui";
+import { ArrowRight } from "@phosphor-icons/react";
+import { Field, Input, PasswordInput } from "@sakwa/ui";
 import { loginSchema } from "@sakwa/validators";
 import { useState, type FormEvent } from "react";
-import { isDemoMode } from "@/lib/demo/accounts";
+import { AuthShell } from "@/components/auth-shell";
+import { isDemoMode, writeDemoSession, type DemoAccount } from "@/lib/demo/accounts";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 
 export default function LoginPage() {
@@ -39,6 +41,8 @@ export default function LoginPage() {
           setError("Email or password is not right.");
           return;
         }
+        const payload = (await response.json().catch(() => null)) as { account?: DemoAccount } | null;
+        if (payload?.account) writeDemoSession(payload.account);
         window.location.href = "/";
       } catch {
         setPending(false);
@@ -64,13 +68,25 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex flex-1 flex-col justify-center py-16">
-      <h1 className="text-3xl font-extrabold tracking-tight">Sign in</h1>
-      <p className="mt-2 text-sm text-muted">
-        {demo
-          ? "Demo credentials: <role>@gmail.com with password <role> (e.g. agent@gmail.com / agent)."
-          : "Use the email given to you by Sakwa Agro Enterprise."}
-      </p>
+    <AuthShell
+      image="/images/warehouse.jpg"
+      imageAlt="Sacks of rice stacked in a store"
+      eyebrow="How Sakwa works"
+      title="Sign in to follow every kg."
+      body="Rice is bought by an agent, kept in the store, then sold to a buyer. You can see the kg and the money at each step."
+      footer={
+        <p>
+          Customers can{" "}
+          <a className="font-semibold text-primary" href="/signup">
+            create an account
+          </a>
+          .
+        </p>
+      }
+    >
+      <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted">Welcome back</p>
+      <h2 className="mt-2 text-3xl font-extrabold tracking-tight">Sign in</h2>
+      <p className="mt-2 text-base text-muted">Use the email given to you by Sakwa Agro Enterprise.</p>
       <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-4" noValidate>
         <Field label="Email" htmlFor="email">
           <Input id="email" name="email" type="email" autoComplete="email" required />
@@ -88,17 +104,17 @@ export default function LoginPage() {
             {error}
           </p>
         ) : null}
-        <Button type="submit" disabled={pending}>
-          {pending ? "Signing in" : "Sign in"}
-        </Button>
+        <button
+          type="submit"
+          disabled={pending}
+          className="group mt-2 inline-flex min-h-14 items-center justify-between gap-3 rounded-full bg-primary pl-6 pr-1.5 text-base font-semibold text-primary-foreground transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-primary-hover active:scale-[0.98] disabled:opacity-50"
+        >
+          <span>{pending ? "Signing in" : "Sign in"}</span>
+          <span className="flex size-11 items-center justify-center rounded-full bg-black/10 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5">
+            <ArrowRight size={20} weight="bold" />
+          </span>
+        </button>
       </form>
-      <p className="mt-6 text-sm text-muted">
-        Customers can{" "}
-        <a className="font-semibold text-primary" href="/signup">
-          create an account
-        </a>
-        .
-      </p>
-    </main>
+    </AuthShell>
   );
 }

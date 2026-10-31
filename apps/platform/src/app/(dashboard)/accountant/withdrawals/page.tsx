@@ -5,8 +5,9 @@ export default function AccountantWithdrawalsPage() {
   return (
     <div>
       <PageHeading
+        mark="profit_pay"
         title="Profit out"
-        body="Mark a request as paid only after the money has gone out offline."
+        body="After the director accepts a request, pay the investor and upload the transfer receipt."
       />
       <WithdrawalList mode="pay" />
     </div>

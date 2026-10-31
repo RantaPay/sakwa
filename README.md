@@ -14,7 +14,7 @@ No payment is taken on the site.
 ## What is in this repo
 
 - Landing page (static Next.js export)
-- Platform PWA with Admin, Director, Accountant, Store, Field buyer, Investor, Customer
+- Platform PWA with Admin, Director, Accountant, Store, Agent, Investor, Customer
 - Supabase schema, RLS, views, audit log, notification triggers
 - Shared UI, types, validators, money helpers, email templates
 
@@ -115,17 +115,17 @@ Point `sakwaagro.com` at landing and `app.sakwaagro.com` at platform. Set env va
 
 ## Offline
 
-Field buyers and store staff can record deliveries, confirmations, and releases with no network. Writes sit in a Dexie outbox and sync when the connection returns. The top bar shows online state and a pending count.
+Agents and store staff can record deliveries, confirmations, and releases with no network. Writes sit in a Dexie outbox and sync when the connection returns. The top bar shows online state and a pending count.
 
 ## Roles
 
 | Route | Who | What they do |
 | --- | --- | --- |
 | `/admin` | Admin | People, stores, history |
-| `/director` | Director | Watch field buyers and stores, profit requests, enquiries |
+| `/director` | Director | Watch agents and stores, profit requests, enquiries |
 | `/accountant` | Accountant | Cash given, orders, payments, other money, capital, returns, profit paid, reports |
 | `/warehouse` | Store | Incoming, outgoing, stock |
-| `/agent` | Field buyer | Cash received, deliveries, balance |
+| `/agent` | Agent | Cash received, deliveries, balance |
 | `/investor` | Investor | Own capital, returns, profit out |
 | `/customer` | Customer | Orders and profile |
 

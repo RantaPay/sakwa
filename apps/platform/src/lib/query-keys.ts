@@ -15,7 +15,17 @@ export const queryKeys = {
   positions: (investorId?: string) => ["positions", investorId ?? "all"] as const,
   returns: (investorId?: string) => ["returns", investorId ?? "all"] as const,
   withdrawals: (investorId?: string) => ["withdrawals", investorId ?? "all"] as const,
+  investmentRequests: (investorId?: string) =>
+    ["investment-requests", investorId ?? "all"] as const,
   notifications: (userId: string) => ["notifications", userId] as const,
   profile: (userId: string) => ["profile", userId] as const,
   agentBalances: ["agent-balances"] as const,
+  marketPrices: ["market-prices"] as const,
+  houseSettings: ["house-settings"] as const,
+  audit: ["audit"] as const,
+  analytics: ["analytics"] as const,
+  systemSnapshot: ["system-snapshot"] as const,
+  tradeBooks: (warehouseIds?: string[]) =>
+    ["trade-books", warehouseIds?.slice().sort().join(",") ?? "all"] as const,
+  permissions: ["role-permissions"] as const,
 };

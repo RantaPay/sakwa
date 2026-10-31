@@ -22,10 +22,10 @@ export function Field({
       <Label htmlFor={htmlFor}>{label}</Label>
       {children}
       {hint && !error ? (
-        <p className="text-xs text-muted-foreground">{hint}</p>
+        <p className="text-sm text-muted-foreground">{hint}</p>
       ) : null}
       {error ? (
-        <p className="text-xs text-danger" role="alert">
+        <p className="text-sm text-danger" role="alert">
           {error}
         </p>
       ) : null}

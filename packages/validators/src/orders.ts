@@ -10,7 +10,7 @@ export const orderSchema = z.object({
 
 export const orderPriceSchema = z.object({
   orderId: z.uuid(),
-  pricePerBagNaira: z.number().positive("Enter the price per bag."),
+  pricePerKgNaira: z.number().positive("Enter the price per kg."),
   warehouseId: z.uuid().optional(),
 });
 

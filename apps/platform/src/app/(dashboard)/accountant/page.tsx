@@ -1,36 +1,41 @@
-import { formatNaira, profitKobo } from "@sakwa/utils";
-import { PageHeading } from "@/components/page-heading";
-import { createServerSupabase } from "@/lib/supabase/server";
+"use client";
 
-export default async function AccountantHomePage() {
-  const supabase = await createServerSupabase();
-  const { data } = await supabase.from("transactions").select("direction, amount_kobo");
-  const incoming = (data ?? [])
+import { formatNaira, profitKobo } from "@sakwa/utils";
+import { useQuery } from "@tanstack/react-query";
+import { DashboardHome } from "@/components/dashboard-home";
+import { WelcomeCard } from "@/components/welcome-card";
+import { listTransactions } from "@/features/money";
+import { GrantedHome } from "@/features/permissions/home-sections";
+import { queryKeys } from "@/lib/query-keys";
+
+export default function AccountantHomePage() {
+  const transactions = useQuery({ queryKey: queryKeys.transactions, queryFn: listTransactions });
+  const incoming = (transactions.data ?? [])
     .filter((row) => row.direction === "incoming")
     .reduce((sum, row) => sum + BigInt(row.amount_kobo), 0n);
-  const outgoing = (data ?? [])
+  const outgoing = (transactions.data ?? [])
     .filter((row) => row.direction === "outgoing")
     .reduce((sum, row) => sum + BigInt(row.amount_kobo), 0n);
 
   return (
-    <div>
-      <PageHeading title="Accountant" body="Write in cash given, customer payments, and other money." />
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <div className="rounded-lg border border-border p-5">
-          <p className="text-sm text-muted">Money in</p>
-          <p className="mt-2 font-mono text-2xl">{formatNaira(incoming)}</p>
-        </div>
-        <div className="rounded-lg border border-border p-5">
-          <p className="text-sm text-muted">Money out</p>
-          <p className="mt-2 font-mono text-2xl">{formatNaira(outgoing)}</p>
-        </div>
-        <div className="rounded-lg border border-border bg-accent-soft p-5">
-          <p className="text-sm text-muted">Result</p>
-          <p className="mt-2 font-mono text-2xl">
-            {formatNaira(profitKobo({ incomingKobo: incoming, outgoingKobo: outgoing }))}
-          </p>
-        </div>
-      </div>
-    </div>
+    <DashboardHome
+      greeting={
+        <WelcomeCard
+          role="accountant"
+          body="Write in cash given to agents, customer payments, and other money."
+          stats={[
+            { label: "Money in", value: formatNaira(incoming) },
+            { label: "Money out", value: formatNaira(outgoing) },
+            {
+              label: "Result",
+              value: formatNaira(profitKobo({ incomingKobo: incoming, outgoingKobo: outgoing })),
+              gold: true,
+            },
+          ]}
+        />
+      }
+    >
+      <GrantedHome role="accountant" />
+    </DashboardHome>
   );
 }

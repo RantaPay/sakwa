@@ -21,7 +21,7 @@ export async function flushOutbox() {
 
   for (const row of pending) {
     await sakwaDb.outbox.update(row.id, { status: "syncing", error: null });
-    const { error } = await supabase.from(row.tableName).upsert(row.payload as never);
+    const { error } = await supabase.from(row.tableName as "orders").upsert(row.payload as never);
     if (error) {
       await sakwaDb.outbox.update(row.id, { status: "failed", error: error.message });
     } else {

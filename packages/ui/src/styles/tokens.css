@@ -1,19 +1,23 @@
 @theme {
-  --color-background: #ffffff;
-  --color-surface: #ffffff;
-  --color-foreground: #18181b;
-  --color-muted: #57534e;
-  --color-muted-foreground: #78716c;
-  --color-border: #e7e5e4;
-  --color-ring: #166534;
-  --color-primary: #166534;
-  --color-primary-hover: #14532d;
-  --color-primary-foreground: #f7fee7;
-  --color-primary-soft: #dcfce7;
-  --color-accent: #d4a72c;
-  --color-accent-foreground: #1c1917;
-  --color-accent-soft: #fbf3dc;
-  --color-success: #166534;
+  --color-background: #eeeae4;
+  --color-surface: #fffcf8;
+  --color-bezel: #e4d5c2;
+  --color-wash: #f4eee6;
+  --color-track: #d9cbb8;
+  --color-foreground: #4c2922;
+  --color-muted: #5c463c;
+  --color-muted-foreground: #6e564a;
+  --color-border: #e0d3c4;
+  --color-ring: #315528;
+  --color-primary: #315528;
+  --color-primary-hover: #243e1c;
+  --color-primary-foreground: #f6f1e8;
+  --color-primary-soft: #e5f0df;
+  --color-field: #4f9542;
+  --color-accent: #caa673;
+  --color-accent-foreground: #4c2922;
+  --color-accent-soft: #f3e6d2;
+  --color-success: #315528;
   --color-warning: #b45309;
   --color-danger: #b91c1c;
   --color-info: #1d4ed8;
@@ -24,10 +28,44 @@
   --radius-lg: 1rem;
   --radius-xl: 1.5rem;
   --radius-2xl: 2rem;
-  --shadow-whisper: 0 20px 40px -24px rgb(24 24 27 / 0.12);
+  --shadow-whisper: 0 20px 40px -24px rgb(76 41 34 / 0.16);
   --ease-sakwa: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Card paper keeps the grain mark in the corner, and a repeat sits under the type. */
+:where(div, li, ul, form, article, section, figure)[class*="rounded-"]:is(
+  [class~="bg-surface"],
+  [class~="bg-white"]
+) {
+  background-image: var(--sakwa-motif), var(--sakwa-dots);
+  background-repeat: no-repeat, repeat;
+  background-position: right 12px top 8px, 0 0;
+  background-size: 148px 148px, 28px 28px;
+}
+
+:nth-child(3n + 2) > :only-child:is([class~="bg-surface"], [class~="bg-white"])[class*="rounded-"],
+:is(div, li, ul, form, article, section, figure)[class*="rounded-"]:is(
+    [class~="bg-surface"],
+    [class~="bg-white"]
+  ):nth-child(3n + 2) {
+  background-image: var(--sakwa-motif), var(--sakwa-stripes);
+  background-size: 148px 148px, 20px 20px;
+}
+
+:nth-child(3n) > :only-child:is([class~="bg-surface"], [class~="bg-white"])[class*="rounded-"],
+:is(div, li, ul, form, article, section, figure)[class*="rounded-"]:is(
+    [class~="bg-surface"],
+    [class~="bg-white"]
+  ):nth-child(3n) {
+  background-image: var(--sakwa-motif), var(--sakwa-boxes);
+  background-size: 148px 148px, 64px 64px;
 }
 
 :root {
   color-scheme: light;
+  --sakwa-motif: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><g><rect x='118' y='28' width='40' height='16' rx='8' fill='%234C2922' fill-opacity='0.34' transform='rotate(24 138 36)'/><rect x='146' y='52' width='36' height='15' rx='7.5' fill='%23CAA673' fill-opacity='0.85' transform='rotate(-16 164 59)'/><rect x='104' y='58' width='34' height='14' rx='7' fill='%234C2922' fill-opacity='0.26' transform='rotate(6 121 65)'/><rect x='132' y='82' width='32' height='14' rx='7' fill='%234C2922' fill-opacity='0.32' transform='rotate(32 148 89)'/><rect x='92' y='86' width='30' height='13' rx='6.5' fill='%23CAA673' fill-opacity='0.72' transform='rotate(-8 107 92)'/><rect x='158' y='88' width='28' height='12' rx='6' fill='%234C2922' fill-opacity='0.24' transform='rotate(-28 172 94)'/></g></svg>");
+  --sakwa-dots: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'><circle cx='4' cy='4' r='1.15' fill='%234C2922' fill-opacity='0.07'/><circle cx='18' cy='18' r='1.2' fill='%23CAA673' fill-opacity='0.16'/><circle cx='18' cy='5' r='0.9' fill='%234F9542' fill-opacity='0.08'/><circle cx='6' cy='19' r='0.8' fill='%234C2922' fill-opacity='0.05'/></svg>");
+  --sakwa-stripes: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'><path d='M-2 18 L18 -2' stroke='%23CAA673' stroke-width='1' stroke-opacity='0.14'/><path d='M-2 8 L8 -2' stroke='%234C2922' stroke-width='0.7' stroke-opacity='0.06'/><path d='M8 22 L22 8' stroke='%234C2922' stroke-width='0.7' stroke-opacity='0.06'/></svg>");
+  --sakwa-boxes: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><rect x='6' y='8' width='18' height='12' rx='2' fill='none' stroke='%234C2922' stroke-opacity='0.08' stroke-width='1'/><rect x='34' y='22' width='18' height='12' rx='2' fill='none' stroke='%23CAA673' stroke-opacity='0.16' stroke-width='1'/><rect x='14' y='40' width='16' height='10' rx='2' fill='%23CAA673' fill-opacity='0.05'/><rect x='40' y='44' width='14' height='10' rx='2' fill='none' stroke='%234C2922' stroke-opacity='0.06' stroke-width='1'/></svg>");
+  --sakwa-page: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'><circle cx='16' cy='22' r='1.5' fill='%234C2922' fill-opacity='0.18'/><circle cx='58' cy='46' r='1.4' fill='%23CAA673' fill-opacity='0.4'/><circle cx='96' cy='18' r='1.2' fill='%234F9542' fill-opacity='0.24'/><circle cx='112' cy='74' r='1.5' fill='%234C2922' fill-opacity='0.14'/><circle cx='34' cy='92' r='1.3' fill='%23CAA673' fill-opacity='0.32'/><circle cx='84' cy='112' r='1.4' fill='%234C2922' fill-opacity='0.16'/><rect x='100' y='100' width='12' height='6' rx='3' fill='%23CAA673' fill-opacity='0.34' transform='rotate(-22 106 103)'/><rect x='22' y='48' width='11' height='5' rx='2.5' fill='%234C2922' fill-opacity='0.12' transform='rotate(18 27 50)'/></svg>");
 }

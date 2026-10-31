@@ -20,13 +20,13 @@ export function EmailLayout({
     <Html>
       <Head />
       <Preview>{preview}</Preview>
-      <Body style={{ backgroundColor: "#ffffff", fontFamily: "Arial, sans-serif" }}>
+      <Body style={{ backgroundColor: "#EEEAE4", fontFamily: "Arial, sans-serif" }}>
         <Container style={{ maxWidth: 560, padding: "32px 24px" }}>
-          <Text style={{ color: "#166534", fontSize: 14, fontWeight: 700, letterSpacing: 1 }}>
+          <Text style={{ color: "#315528", fontSize: 14, fontWeight: 700, letterSpacing: 1 }}>
             SAKWA AGRO ENTERPRISE
           </Text>
           <Section>{children}</Section>
-          <Text style={{ color: "#78716C", fontSize: 12, marginTop: 32 }}>
+          <Text style={{ color: "#5C463C", fontSize: 12, marginTop: 32 }}>
             This message was sent from the Sakwa Agro Enterprise books. Do not reply to this mail
             with payments.
           </Text>

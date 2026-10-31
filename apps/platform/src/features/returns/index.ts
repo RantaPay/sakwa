@@ -1,3 +1,4 @@
-export { listReturns, applyReturnCycle } from "./services/returns";
-export { useReturns } from "./hooks/use-returns";
-export { ReturnList } from "./components/return-list";
+export { listReturns, applyReturnCycle } from "./returns";
+export { useReturns } from "./use-returns";
+export { ReturnList } from "./return-list";
+export { ReturnsPanel } from "./returns-panel";

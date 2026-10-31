@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   if (!account) {
     return NextResponse.json({ error: "Email or password is not right." }, { status: 401 });
   }
-  const response = NextResponse.json({ ok: true });
+  const response = NextResponse.json({ ok: true, account });
   response.cookies.set({
     name: DEMO_COOKIE,
     value: encodeDemoCookie(account),

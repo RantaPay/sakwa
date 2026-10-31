@@ -1,11 +1,8 @@
 import { env } from "@/lib/env";
-import { ReturnsClient } from "./returns-client";
+import { ReturnsPanel } from "@/features/returns";
 
 export default function AccountantReturnsPage() {
   return (
-    <ReturnsClient
-      kind={env.RETURN_FORMULA_KIND}
-      weeklyPercentBps={env.RETURN_WEEKLY_PERCENT_BPS}
-    />
+    <ReturnsPanel weeklyPercentBps={env.RETURN_WEEKLY_PERCENT_BPS} />
   );
 }

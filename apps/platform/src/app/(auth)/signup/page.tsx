@@ -1,8 +1,10 @@
 "use client";
 
-import { Button, Field, Input, PasswordInput } from "@sakwa/ui";
+import { ArrowRight } from "@phosphor-icons/react";
+import { Field, Input, PasswordInput } from "@sakwa/ui";
 import { signupSchema } from "@sakwa/validators";
 import { useState, type FormEvent } from "react";
+import { AuthShell } from "@/components/auth-shell";
 import { isDemoMode } from "@/lib/demo/accounts";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 
@@ -56,11 +58,25 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="flex flex-1 flex-col justify-center py-16">
-      <h1 className="text-3xl font-extrabold tracking-tight">Create a customer account</h1>
-      <p className="mt-2 text-sm text-muted">
-        For buying rice only. Staff and investors are added by admin.
-      </p>
+    <AuthShell
+      image="/images/grains.jpg"
+      imageAlt="Milled rice grains in an open palm"
+      eyebrow="For buyers"
+      title="Create an account to order rice."
+      body="Staff and investors are added from inside the house. This page is for customers only."
+      footer={
+        <p>
+          Already have an account?{" "}
+          <a className="font-semibold text-primary" href="/login">
+            Sign in
+          </a>
+          .
+        </p>
+      }
+    >
+      <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted">New customer</p>
+      <h2 className="mt-2 text-3xl font-extrabold tracking-tight">Create an account</h2>
+      <p className="mt-2 text-base text-muted">For buying rice only.</p>
       <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-4" noValidate>
         <Field label="Name" htmlFor="fullName">
           <Input id="fullName" name="fullName" autoComplete="name" required />
@@ -84,10 +100,17 @@ export default function SignupPage() {
             {error}
           </p>
         ) : null}
-        <Button type="submit" disabled={pending}>
-          {pending ? "Creating" : "Create account"}
-        </Button>
+        <button
+          type="submit"
+          disabled={pending}
+          className="group mt-2 inline-flex min-h-14 items-center justify-between gap-3 rounded-full bg-primary pl-6 pr-1.5 text-base font-semibold text-primary-foreground transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-primary-hover active:scale-[0.98] disabled:opacity-50"
+        >
+          <span>{pending ? "Creating" : "Create account"}</span>
+          <span className="flex size-11 items-center justify-center rounded-full bg-black/10 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5">
+            <ArrowRight size={20} weight="bold" />
+          </span>
+        </button>
       </form>
-    </main>
+    </AuthShell>
   );
 }

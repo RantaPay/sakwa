@@ -5,8 +5,9 @@ export default function DirectorWithdrawalsPage() {
   return (
     <div>
       <PageHeading
+        mark="profit_requests"
         title="Profit requests"
-        body="Approve or turn down a request. Payment is made offline."
+        body="Accept a request, pay the investor, then upload the transfer receipt. They confirm when the money lands."
       />
       <WithdrawalList mode="review" />
     </div>

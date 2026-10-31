@@ -5,6 +5,7 @@ export default function AgentDeliveriesPage() {
   return (
     <div className="space-y-6">
       <PageHeading
+        mark="deliveries"
         title="Deliveries"
         body="Record bags supplied to a store."
       />

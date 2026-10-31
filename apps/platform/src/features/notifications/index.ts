@@ -1,3 +1,4 @@
-export { listNotifications, markRead } from "./services/notifications";
-export { useNotifications } from "./hooks/use-notifications";
-export { NotificationInbox } from "./components/inbox";
+export { listNotifications, markRead } from "./notifications";
+export { useNotifications } from "./use-notifications";
+export { NotificationInbox } from "./inbox";
+export { notifyUser, notifyRole } from "./notify";

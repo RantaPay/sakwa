@@ -4,7 +4,7 @@ import * as React from "react";
 import { cn } from "../lib/cn";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] min-h-11",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-base font-semibold transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] min-h-12",
   {
     variants: {
       variant: {
@@ -17,9 +17,9 @@ const buttonVariants = cva(
       },
       size: {
         md: "px-5 py-2.5",
-        lg: "px-6 py-3 text-base",
-        sm: "px-4 py-2 text-xs min-h-10",
-        icon: "size-11 p-0",
+        lg: "px-6 py-3 text-lg",
+        sm: "px-4 py-2 text-sm min-h-11",
+        icon: "size-12 p-0",
       },
     },
     defaultVariants: {

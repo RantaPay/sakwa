@@ -1,5 +1,13 @@
-export { listStock, listMovements, releaseStock } from "./services/stock";
-export { useStock, useMovements, useReleaseStock } from "./hooks/use-stock";
-export { StockBoard } from "./components/stock-board";
-export { MovementList } from "./components/movement-list";
-export { ReleaseList } from "./components/release-list";
+export { listStock, listMovements, releaseStock } from "./stock";
+export { useStock, useMovements, useReleaseStock } from "./use-stock";
+export { StockBoard } from "./stock-board";
+export { MovementList } from "./movement-list";
+export { ReleaseList } from "./release-list";
+export {
+  listWarehouses,
+  createWarehouse,
+  assignStaff,
+  listWarehouseStaff,
+  listAssignedWarehouseIds,
+} from "./warehouses";
+export { StoreForm } from "./store-form";
