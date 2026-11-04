@@ -1,6 +1,6 @@
 "use client";
 
-import { HandCoins, Scales, Tag } from "@phosphor-icons/react";
+import { HandCoins, Scales, Tag, TrendUp } from "@phosphor-icons/react";
 import { formatNaira } from "@sakwa/utils";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
@@ -10,6 +10,16 @@ function figure(kobo: number | undefined, loading: boolean) {
   if (loading) return "Loading";
   if (!kobo) return "Not set";
   return formatNaira(kobo);
+}
+
+function interestFigure(
+  buying: number | undefined,
+  selling: number | undefined,
+  loading: boolean,
+) {
+  if (loading) return "Loading";
+  if (!buying || !selling) return "Not set";
+  return formatNaira(selling - buying);
 }
 
 function Price({
@@ -28,7 +38,9 @@ function Price({
       </span>
       <div className="min-w-0">
         <p className="text-base text-muted">{label}</p>
-        <p className="mt-1 font-mono text-3xl font-semibold tabular-nums sm:text-4xl">{value}</p>
+        <p className="mt-1 font-mono text-3xl font-semibold tabular-nums sm:text-4xl">
+          {value}
+        </p>
         <p className="mt-1 text-base text-muted">per kg</p>
       </div>
     </div>
@@ -36,7 +48,10 @@ function Price({
 }
 
 export function PriceCard() {
-  const prices = useQuery({ queryKey: queryKeys.marketPrices, queryFn: listMarketPrices });
+  const prices = useQuery({
+    queryKey: queryKeys.marketPrices,
+    queryFn: listMarketPrices,
+  });
   const latest = prices.data?.[0];
   const loading = prices.isLoading;
 
@@ -53,9 +68,26 @@ export function PriceCard() {
               <Scales size={24} weight="light" aria-hidden />
             </span>
           </div>
-          <div className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <Price label="Buying" value={figure(latest?.buying_price_per_kg_kobo, loading)} icon={HandCoins} />
-            <Price label="Selling" value={figure(latest?.selling_price_per_kg_kobo, loading)} icon={Tag} />
+          <div className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-3">
+            <Price
+              label="Buying"
+              value={figure(latest?.buying_price_per_kg_kobo, loading)}
+              icon={HandCoins}
+            />
+            <Price
+              label="Selling"
+              value={figure(latest?.selling_price_per_kg_kobo, loading)}
+              icon={Tag}
+            />
+            <Price
+              label="Interest"
+              value={interestFigure(
+                latest?.buying_price_per_kg_kobo,
+                latest?.selling_price_per_kg_kobo,
+                loading,
+              )}
+              icon={TrendUp}
+            />
           </div>
           <p className="mt-4 text-sm text-muted">
             {latest ? `From ${latest.effective_on}.` : "Set in admin settings."}

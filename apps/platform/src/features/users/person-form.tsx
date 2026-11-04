@@ -39,7 +39,10 @@ export function PersonForm() {
 
   return (
     <div className="space-y-8">
-      <form action={onSubmit} className="grid gap-4 rounded-lg border border-border p-5 md:grid-cols-2">
+      <form
+        action={onSubmit}
+        className="grid gap-4 rounded-lg border border-border p-5 md:grid-cols-2"
+      >
         <Field label="Name" htmlFor="fullName">
           <Input id="fullName" name="fullName" required />
         </Field>
@@ -50,7 +53,12 @@ export function PersonForm() {
           <Input id="phone" name="phone" required />
         </Field>
         <Field label="Temporary password" htmlFor="password">
-          <PasswordInput id="password" name="password" autoComplete="new-password" required />
+          <PasswordInput
+            id="password"
+            name="password"
+            autoComplete="new-password"
+            required
+          />
         </Field>
         <Field label="Primary role" htmlFor="primaryRole">
           <select
@@ -58,7 +66,7 @@ export function PersonForm() {
             name="primaryRole"
             className="min-h-11 rounded-md border border-border px-3"
           >
-            {ROLES.filter((role) => role !== "customer").map((role) => (
+            {ROLES.map((role) => (
               <option key={role} value={role}>
                 {ROLE_LABEL[role]}
               </option>
@@ -68,7 +76,7 @@ export function PersonForm() {
         <fieldset className="md:col-span-2">
           <legend className="mb-2 text-sm font-medium">Roles</legend>
           <div className="flex flex-wrap gap-3">
-            {ROLES.filter((role) => role !== "customer").map((role) => (
+            {ROLES.map((role) => (
               <label key={role} className="flex min-h-11 items-center gap-2 text-sm">
                 <input type="checkbox" name="roles" value={role} />
                 {ROLE_LABEL[role]}
@@ -81,7 +89,10 @@ export function PersonForm() {
       </form>
       <ul className="divide-y divide-border rounded-lg border border-border">
         {(people.data ?? []).map((person) => (
-          <li key={person.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+          <li
+            key={person.id}
+            className="flex flex-wrap items-center justify-between gap-3 p-4"
+          >
             <div>
               <p className="font-semibold">{person.full_name}</p>
               <p className="text-sm text-muted">{person.email}</p>

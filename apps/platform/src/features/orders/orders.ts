@@ -28,6 +28,7 @@ export async function placeOrder(input: {
   kgPerBag: number;
   deliveryDetails: string;
   notes?: string;
+  paymentChoice: "paid" | "unpaid";
 }) {
   const supabase = createBrowserSupabase();
   const { error } = await supabase.from("orders").insert({
@@ -39,12 +40,52 @@ export async function placeOrder(input: {
     price_per_kg_kobo: 0,
     delivery_details: input.deliveryDetails,
     notes: input.notes || null,
+    payment_choice: input.paymentChoice,
     status: "placed",
   });
   if (error) throw error;
 }
 
-export async function setOrderPrice(orderId: string, pricePerKgNaira: number, warehouseId?: string) {
+export async function approveOrder(input: {
+  orderId: string;
+  warehouseId: string;
+  approvedBy: string;
+}) {
+  const supabase = createBrowserSupabase();
+  const { error } = await supabase
+    .from("orders")
+    .update({
+      status: "approved",
+      warehouse_id: input.warehouseId,
+      approved_by: input.approvedBy,
+      approved_at: new Date().toISOString(),
+    })
+    .eq("id", input.orderId);
+  if (error) throw error;
+}
+
+export async function confirmReceipt(input: {
+  orderId: string;
+  receivedBagCount: number;
+}) {
+  const supabase = createBrowserSupabase();
+  const { error } = await supabase
+    .from("orders")
+    .update({
+      status: "delivered",
+      received_bag_count: input.receivedBagCount,
+      received_at: new Date().toISOString(),
+      delivered_at: new Date().toISOString(),
+    })
+    .eq("id", input.orderId);
+  if (error) throw error;
+}
+
+export async function setOrderPrice(
+  orderId: string,
+  pricePerKgNaira: number,
+  warehouseId?: string,
+) {
   const supabase = createBrowserSupabase();
   const { error } = await supabase
     .from("orders")

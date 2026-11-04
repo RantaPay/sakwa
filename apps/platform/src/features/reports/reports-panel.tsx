@@ -2,6 +2,7 @@
 
 import { Button } from "@sakwa/ui";
 import { listTransactions } from "@/features/money";
+import { AccountantDayButton } from "./daily-buttons";
 import { transactionsWorkbook } from "./excel";
 import { transactionsPdf } from "./pdf";
 
@@ -33,6 +34,7 @@ async function downloadPdf() {
 export function ReportsPanel() {
   return (
     <div className="flex flex-wrap gap-3">
+      <AccountantDayButton />
       <Button type="button" onClick={() => void downloadExcel()}>
         Download Excel
       </Button>

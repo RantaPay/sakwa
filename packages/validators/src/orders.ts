@@ -6,6 +6,7 @@ export const orderSchema = z.object({
   kgPerBag: z.number().positive("Enter kg per bag."),
   deliveryDetails: z.string().trim().min(8, "Enter where the rice should go."),
   notes: z.string().max(1000).optional().or(z.literal("")),
+  paymentChoice: z.enum(["paid", "unpaid"], { message: "Say if this order is paid." }),
 });
 
 export const orderPriceSchema = z.object({

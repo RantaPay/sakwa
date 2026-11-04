@@ -5,6 +5,7 @@ export { MovementList } from "./movement-list";
 export { ReleaseList } from "./release-list";
 export {
   listWarehouses,
+  closeWarehouse,
   createWarehouse,
   assignStaff,
   listWarehouseStaff,

@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { SectionMark } from "@/components/shell/section-icons";
-import { AdvanceForm, AdvanceList } from "@/features/advances";
+import { PayQueue } from "@/features/advances";
 import { DeliveryDecisionList, DeliveryForm, DeliveryList } from "@/features/deliveries";
 import { InvestorDesk } from "@/features/investments";
 import { PaymentBoard } from "@/features/money";
@@ -33,7 +33,9 @@ function StoreTrade() {
     queryFn: () => listAssignedWarehouseIds(user?.id as string),
   });
   if (!assigned.data) return null;
-  return <TradeBoard warehouseIds={assigned.data} title="Expense / interest for this store" />;
+  return (
+    <TradeBoard warehouseIds={assigned.data} title="Expense / interest for this store" />
+  );
 }
 
 export function FeatureHome({ featureId }: { featureId: string }) {
@@ -47,9 +49,8 @@ export function FeatureHome({ featureId }: { featureId: string }) {
     case "cash_given":
       return (
         <section aria-label="Record cash given">
-          <SectionTitle mark="cash_given">Record cash given</SectionTitle>
-          <AdvanceForm />
-          <AdvanceList />
+          <SectionTitle mark="cash_given">Pay an agent</SectionTitle>
+          <PayQueue />
         </section>
       );
     case "deliveries":

@@ -1,7 +1,13 @@
 "use client";
 
 import { Button, Field, Input, Select, StatusBadge } from "@sakwa/ui";
-import { deliveryTotalKg, formatNaira, koboToNairaNumber, orderLineKobo, pricePerKgKobo } from "@sakwa/utils";
+import {
+  deliveryTotalKg,
+  formatNaira,
+  koboToNairaNumber,
+  orderLineKobo,
+  pricePerKgKobo,
+} from "@sakwa/utils";
 import { useQuery } from "@tanstack/react-query";
 import { QueryGate } from "@/components/query-gate";
 import { listMarketPrices } from "@/features/prices/market-prices";
@@ -29,7 +35,9 @@ export function OrderPriceList() {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="font-semibold">
+                  {row.bag_count} bags ·{" "}
                   {deliveryTotalKg(row.bag_count, Number(row.kg_per_bag))} kg
+                  {row.payment_choice === "paid" ? " · Paid" : " · Unpaid"}
                 </p>
                 <p className="text-sm text-muted">{row.delivery_details}</p>
                 <p className="mt-1 font-mono text-sm">

@@ -4,12 +4,19 @@ import { formatNaira, profitKobo } from "@sakwa/utils";
 import { useQuery } from "@tanstack/react-query";
 import { DashboardHome } from "@/components/dashboard-home";
 import { WelcomeCard } from "@/components/welcome-card";
+import { figureText, useFigures } from "@/features/money/figures";
 import { listTransactions } from "@/features/money";
+import { ExpensePanel } from "@/features/overview/expense-panel";
 import { GrantedHome } from "@/features/permissions/home-sections";
+import { AccountantDayButton } from "@/features/reports/daily-buttons";
 import { queryKeys } from "@/lib/query-keys";
 
 export default function AccountantHomePage() {
-  const transactions = useQuery({ queryKey: queryKeys.transactions, queryFn: listTransactions });
+  const { hidden } = useFigures();
+  const transactions = useQuery({
+    queryKey: queryKeys.transactions,
+    queryFn: listTransactions,
+  });
   const incoming = (transactions.data ?? [])
     .filter((row) => row.direction === "incoming")
     .reduce((sum, row) => sum + BigInt(row.amount_kobo), 0n);
@@ -24,18 +31,27 @@ export default function AccountantHomePage() {
           role="accountant"
           body="Write in cash given to agents, customer payments, and other money."
           stats={[
-            { label: "Money in", value: formatNaira(incoming) },
-            { label: "Money out", value: formatNaira(outgoing) },
+            { label: "Money in", value: figureText(formatNaira(incoming), hidden) },
+            { label: "Money out", value: figureText(formatNaira(outgoing), hidden) },
             {
               label: "Result",
-              value: formatNaira(profitKobo({ incomingKobo: incoming, outgoingKobo: outgoing })),
+              value: figureText(
+                formatNaira(
+                  profitKobo({ incomingKobo: incoming, outgoingKobo: outgoing }),
+                ),
+                hidden,
+              ),
               gold: true,
             },
           ]}
         />
       }
     >
-      <GrantedHome role="accountant" />
+      <div className="space-y-6">
+        <AccountantDayButton />
+        <ExpensePanel />
+        <GrantedHome role="accountant" />
+      </div>
     </DashboardHome>
   );
 }

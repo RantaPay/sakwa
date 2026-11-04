@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
 import { useRealtimeTable } from "@/lib/realtime";
 import {
+  approveOrder,
+  confirmReceipt,
   listAllOrders,
   listCustomerOrders,
   placeOrder,
@@ -31,7 +33,16 @@ export function useCustomerOrders(customerId: string | undefined) {
     onError: (error: Error) => toast.error(error.message),
   });
 
-  return { ...query, create };
+  const receive = useMutation({
+    mutationFn: confirmReceipt,
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey });
+      toast.success("Receipt saved.");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  return { ...query, create, receive };
 }
 
 export function useAllOrders() {
@@ -72,5 +83,14 @@ export function useAllOrders() {
     onError: (error: Error) => toast.error(error.message),
   });
 
-  return { ...query, price, status };
+  const approve = useMutation({
+    mutationFn: approveOrder,
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey });
+      toast.success("Order sent to the store.");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  return { ...query, price, status, approve };
 }

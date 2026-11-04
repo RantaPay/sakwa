@@ -3,6 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { DashboardHome } from "@/components/dashboard-home";
 import { WelcomeCard } from "@/components/welcome-card";
+import { OwingBoard } from "@/features/balances/owing-board";
+import { PendingOrdersCard } from "@/features/orders";
 import { OverviewBoard } from "@/features/overview";
 import { PriceCard } from "@/features/prices/price-card";
 import { listWarehouses } from "@/features/stock";
@@ -27,6 +29,8 @@ export default function AdminHomePage() {
       }
     >
       <div className="space-y-4 xl:space-y-5">
+        <PendingOrdersCard mode="admin" />
+        <OwingBoard />
         <PriceCard />
         <OverviewBoard />
       </div>

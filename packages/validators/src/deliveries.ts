@@ -24,5 +24,18 @@ export const cashAdvanceSchema = z.object({
   notes: z.string().max(1000).optional().or(z.literal("")),
 });
 
+export const payRequestSchema = z.object({
+  id: z.uuid(),
+  agentId: z.uuid("Choose an agent."),
+  warehouseId: z.uuid("Choose a store."),
+  amountNaira: z.number().positive("Enter the amount to pay."),
+  purpose: z.string().trim().min(3, "Say what the money is for."),
+  expectedBagCount: z.number().int().positive("Enter the bags you expect."),
+  expectedKg: z.number().positive("Enter the kg you expect."),
+  advancedOn: z.string().min(1, "Enter the date."),
+});
+
+export type PayRequestInput = z.infer<typeof payRequestSchema>;
+
 export type DeliveryInput = z.infer<typeof deliverySchema>;
 export type CashAdvanceInput = z.infer<typeof cashAdvanceSchema>;

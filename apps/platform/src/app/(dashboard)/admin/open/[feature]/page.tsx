@@ -7,6 +7,8 @@ const ADMIN_SCREENS = new Set([
   "trade",
   "buying_price",
   "cash_given",
+  "agent_pay",
+  "order_desk",
   "field_buyers",
   "stores",
   "incoming",
@@ -30,5 +32,7 @@ export default async function AdminFeaturePage({
 }) {
   const { feature } = await params;
   if (!ADMIN_SCREENS.has(feature)) notFound();
-  return <FeatureBody featureId={feature} weeklyPercentBps={env.RETURN_WEEKLY_PERCENT_BPS} />;
+  return (
+    <FeatureBody featureId={feature} weeklyPercentBps={env.RETURN_WEEKLY_PERCENT_BPS} />
+  );
 }

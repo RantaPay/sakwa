@@ -3,15 +3,22 @@
 import { useQuery } from "@tanstack/react-query";
 import { DashboardHome } from "@/components/dashboard-home";
 import { WelcomeCard } from "@/components/welcome-card";
+import { PendingOrdersCard } from "@/features/orders";
 import { GrantedHome } from "@/features/permissions/home-sections";
-import { listStock } from "@/features/stock";
+import { StoreDayButton } from "@/features/reports/daily-buttons";
+import { MovementList, listStock } from "@/features/stock";
+import { useStoreScope } from "@/features/stock/use-store-scope";
 import { queryKeys } from "@/lib/query-keys";
 
 export default function WarehouseHomePage() {
   const stock = useQuery({ queryKey: queryKeys.stock, queryFn: listStock });
-  const bags = (stock.data ?? []).reduce((sum, row) => sum + Number(row.bags_on_hand ?? 0), 0);
-  const incoming = (stock.data ?? []).reduce((sum, row) => sum + Number(row.bags_in ?? 0), 0);
-  const outgoing = (stock.data ?? []).reduce((sum, row) => sum + Number(row.bags_out ?? 0), 0);
+  const scope = useStoreScope();
+  const mine = (stock.data ?? []).filter(
+    (row) => !scope.limited || (scope.ids ?? []).includes(row.warehouse_id),
+  );
+  const bags = mine.reduce((sum, row) => sum + Number(row.bags_on_hand ?? 0), 0);
+  const incoming = mine.reduce((sum, row) => sum + Number(row.bags_in ?? 0), 0);
+  const outgoing = mine.reduce((sum, row) => sum + Number(row.bags_out ?? 0), 0);
 
   return (
     <DashboardHome
@@ -27,7 +34,17 @@ export default function WarehouseHomePage() {
         />
       }
     >
-      <GrantedHome role="warehouse" />
+      <div className="space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <PendingOrdersCard mode="warehouse" />
+          <StoreDayButton warehouseIds={scope.ids} />
+        </div>
+        <section>
+          <h2 className="mb-3 text-xl font-semibold">Recent activity</h2>
+          <MovementList />
+        </section>
+        <GrantedHome role="warehouse" />
+      </div>
     </DashboardHome>
   );
 }

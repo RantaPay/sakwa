@@ -1,7 +1,7 @@
 "use server";
 
 import type { Role } from "@sakwa/types";
-import { createAdminSupabase } from "@/lib/supabase/admin";
+import { createAccount } from "@/features/accounts/accounts";
 
 export async function createUserAction(input: {
   fullName: string;
@@ -11,26 +11,14 @@ export async function createUserAction(input: {
   primaryRole: Role;
   password: string;
 }) {
-  const admin = createAdminSupabase();
-  const created = await admin.auth.admin.createUser({
-    email: input.email,
-    password: input.password,
-    email_confirm: true,
-  });
-  if (created.error || !created.data.user) {
-    throw new Error(created.error?.message ?? "Could not create the person.");
-  }
-  const id = created.data.user.id;
-  const { error: profileError } = await admin.from("profiles").insert({
-    id,
-    full_name: input.fullName,
+  if (input.password.length < 8)
+    throw new Error("Use at least 8 characters for the password.");
+  await createAccount({
+    fullName: input.fullName,
     email: input.email,
     phone: input.phone,
-    primary_role: input.primaryRole,
+    password: input.password,
+    role: input.primaryRole,
+    roles: input.roles,
   });
-  if (profileError) throw profileError;
-  const { error: roleError } = await admin.from("user_roles").insert(
-    input.roles.map((role) => ({ user_id: id, role })),
-  );
-  if (roleError) throw roleError;
 }

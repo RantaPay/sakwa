@@ -1,10 +1,16 @@
 "use client";
 
 import { Button, Field, Input, Select, StatusBadge } from "@sakwa/ui";
-import { deliveryTotalKg, formatNaira, orderLineKobo, pricePerKgKobo } from "@sakwa/utils";
+import {
+  deliveryTotalKg,
+  formatNaira,
+  orderLineKobo,
+  pricePerKgKobo,
+} from "@sakwa/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { listAllOrders } from "@/features/orders";
+import { printReceipt } from "@/features/receipts/print-receipt";
 import { queryKeys } from "@/lib/query-keys";
 import { useAuthUser } from "@/lib/use-auth-user";
 import { confirmPayment, listPayments, recordPayment } from "./payments";
@@ -29,8 +35,15 @@ export function PaymentBoard() {
   });
 
   const confirm = useMutation({
-    mutationFn: ({ id, orderId, userId }: { id: string; orderId: string; userId: string }) =>
-      confirmPayment(id, orderId, userId),
+    mutationFn: ({
+      id,
+      orderId,
+      userId,
+    }: {
+      id: string;
+      orderId: string;
+      userId: string;
+    }) => confirmPayment(id, orderId, userId),
     onSuccess: async () => {
       await client.invalidateQueries({ queryKey: queryKeys.payments });
       await client.invalidateQueries({ queryKey: queryKeys.orders() });
@@ -62,13 +75,18 @@ export function PaymentBoard() {
     <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
       <section className="lg:col-span-5" aria-label="Record a customer payment">
         <h2 className="mb-4 text-xl font-semibold">Record a payment</h2>
-        <form action={onSubmit} className="grid gap-4 rounded-lg border border-border p-5">
+        <form
+          action={onSubmit}
+          className="grid gap-4 rounded-lg border border-border p-5"
+        >
           <Field label="Order" htmlFor="orderId">
             <Select id="orderId" name="orderId" required>
               <option value="">Choose an order with a price</option>
               {payable.map((row) => (
                 <option key={row.id} value={row.id}>
-                  {deliveryTotalKg(row.bag_count, Number(row.kg_per_bag))} kg · {formatNaira(orderLineKobo(row))}
+                  {row.bag_count} bags ·{" "}
+                  {deliveryTotalKg(row.bag_count, Number(row.kg_per_bag))} kg ·{" "}
+                  {formatNaira(orderLineKobo(row))}
                 </option>
               ))}
             </Select>
@@ -93,20 +111,58 @@ export function PaymentBoard() {
         <h2 className="mb-4 text-xl font-semibold">Payments</h2>
         <ul className="divide-y divide-border rounded-lg border border-border">
           {(payments.data ?? []).map((row) => (
-            <li key={row.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
+            <li
+              key={row.id}
+              className="flex flex-wrap items-center justify-between gap-3 p-4"
+            >
               <div>
                 <p className="font-mono">{formatNaira(row.amount_kobo)}</p>
                 <p className="text-sm text-muted">{row.notes || "No note"}</p>
               </div>
               <div className="flex items-center gap-3">
-                <StatusBadge status={row.confirmed_at ? "payment_confirmed" : "payment_recorded"} />
+                <StatusBadge
+                  status={row.confirmed_at ? "payment_confirmed" : "payment_recorded"}
+                />
+                <Button
+                  size="sm"
+                  type="button"
+                  variant="secondary"
+                  onClick={() => {
+                    const order = (orders.data ?? []).find(
+                      (item) => item.id === row.order_id,
+                    );
+                    printReceipt("Customer payment", [
+                      { label: "Amount", value: formatNaira(row.amount_kobo) },
+                      { label: "Bags", value: order ? String(order.bag_count) : "Order" },
+                      {
+                        label: "Kg",
+                        value: order
+                          ? String(
+                              deliveryTotalKg(order.bag_count, Number(order.kg_per_bag)),
+                            )
+                          : "",
+                      },
+                      {
+                        label: "Payment",
+                        value: order?.payment_choice === "paid" ? "Paid" : "Recorded",
+                      },
+                      { label: "Note", value: row.notes || "None" },
+                    ]);
+                  }}
+                >
+                  Receipt
+                </Button>
                 {!row.confirmed_at && user ? (
                   <Button
                     size="sm"
                     type="button"
                     disabled={confirm.isPending}
                     onClick={() =>
-                      confirm.mutate({ id: row.id, orderId: row.order_id, userId: user.id })
+                      confirm.mutate({
+                        id: row.id,
+                        orderId: row.order_id,
+                        userId: user.id,
+                      })
                     }
                   >
                     Confirm

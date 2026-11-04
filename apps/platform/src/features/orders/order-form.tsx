@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Field, Input, Textarea } from "@sakwa/ui";
+import { Button, Field, Input, Select, Textarea } from "@sakwa/ui";
 import { orderSchema } from "@sakwa/validators";
 import { useState } from "react";
 import { useAuthUser } from "@/lib/use-auth-user";
@@ -19,6 +19,7 @@ export function OrderForm() {
       kgPerBag: Number(formData.get("kgPerBag")),
       deliveryDetails: String(formData.get("deliveryDetails") ?? ""),
       notes: String(formData.get("notes") ?? ""),
+      paymentChoice: String(formData.get("paymentChoice") ?? ""),
     });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Check the form.");
@@ -34,6 +35,12 @@ export function OrderForm() {
       </Field>
       <Field label="Kg per bag" htmlFor="kgPerBag">
         <Input id="kgPerBag" name="kgPerBag" inputMode="decimal" required />
+      </Field>
+      <Field label="Payment" htmlFor="paymentChoice">
+        <Select id="paymentChoice" name="paymentChoice" required defaultValue="unpaid">
+          <option value="unpaid">Unpaid</option>
+          <option value="paid">Paid</option>
+        </Select>
       </Field>
       <Field label="Where should it go" htmlFor="deliveryDetails">
         <Textarea id="deliveryDetails" name="deliveryDetails" rows={3} required />

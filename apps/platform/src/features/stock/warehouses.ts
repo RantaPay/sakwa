@@ -7,6 +7,15 @@ export async function listWarehouses() {
   return data;
 }
 
+export async function closeWarehouse(id: string) {
+  const supabase = createBrowserSupabase();
+  const { error } = await supabase
+    .from("warehouses")
+    .update({ is_active: false })
+    .eq("id", id);
+  if (error) throw error;
+}
+
 export async function createWarehouse(input: { name: string; location?: string }) {
   const supabase = createBrowserSupabase();
   const { error } = await supabase.from("warehouses").insert({

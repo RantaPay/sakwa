@@ -4,7 +4,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
 import { useRealtimeTable } from "@/lib/realtime";
-import { listAdvances, recordAdvance } from "./advances";
+import {
+  listAdvances,
+  payAgentRequest,
+  recordAdvance,
+  requestAgentPay,
+} from "./advances";
 
 export function useAdvances(agentId?: string) {
   const client = useQueryClient();
@@ -26,5 +31,24 @@ export function useAdvances(agentId?: string) {
     onError: (error: Error) => toast.error(error.message),
   });
 
-  return { ...query, create };
+  const request = useMutation({
+    mutationFn: requestAgentPay,
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: queryKeys.advances() });
+      toast.success("Pay request sent to the accountant.");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  const pay = useMutation({
+    mutationFn: ({ id, paidBy }: { id: string; paidBy: string }) =>
+      payAgentRequest(id, paidBy),
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: queryKeys.advances() });
+      toast.success("Agent paid.");
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  return { ...query, create, request, pay };
 }

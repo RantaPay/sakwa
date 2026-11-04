@@ -4,6 +4,7 @@ import { ArrowRight } from "@phosphor-icons/react";
 import { Field, Input, PasswordInput } from "@sakwa/ui";
 import { loginSchema } from "@sakwa/validators";
 import { useState, type FormEvent } from "react";
+import { useSearchParams } from "next/navigation";
 import { AuthShell } from "@/components/auth-shell";
 import { isDemoMode, writeDemoSession, type DemoAccount } from "@/lib/demo/accounts";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
@@ -12,6 +13,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const demo = isDemoMode();
+  const presetEmail = useSearchParams().get("email") ?? "";
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -19,7 +21,8 @@ export default function LoginPage() {
     const form = new FormData(event.currentTarget);
     const rawEmail = String(form.get("email") ?? "").trim();
     const rawPassword = String(form.get("password") ?? "");
-    const email = demo && rawEmail && !rawEmail.includes("@") ? `${rawEmail}@gmail.com` : rawEmail;
+    const email =
+      demo && rawEmail && !rawEmail.includes("@") ? `${rawEmail}@gmail.com` : rawEmail;
     const parsed = loginSchema.safeParse({
       email,
       password: rawPassword,
@@ -41,7 +44,9 @@ export default function LoginPage() {
           setError("Email or password is not right.");
           return;
         }
-        const payload = (await response.json().catch(() => null)) as { account?: DemoAccount } | null;
+        const payload = (await response.json().catch(() => null)) as {
+          account?: DemoAccount;
+        } | null;
         if (payload?.account) writeDemoSession(payload.account);
         window.location.href = "/";
       } catch {
@@ -84,12 +89,23 @@ export default function LoginPage() {
         </p>
       }
     >
-      <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted">Welcome back</p>
+      <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted">
+        Welcome back
+      </p>
       <h2 className="mt-2 text-3xl font-extrabold tracking-tight">Sign in</h2>
-      <p className="mt-2 text-base text-muted">Use the email given to you by Sakwa Agro Enterprise.</p>
+      <p className="mt-2 text-base text-muted">
+        Use the email given to you by Sakwa Agro Enterprise.
+      </p>
       <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-4" noValidate>
         <Field label="Email" htmlFor="email">
-          <Input id="email" name="email" type="email" autoComplete="email" required />
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            defaultValue={presetEmail}
+          />
         </Field>
         <Field label="Password" htmlFor="password">
           <PasswordInput

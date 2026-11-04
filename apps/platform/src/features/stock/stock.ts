@@ -1,8 +1,6 @@
 import { createId, deliveryTotalKg } from "@sakwa/utils";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { enqueueWrite, isOfflineError } from "@/lib/offline/sync";
-import { setOrderStatus } from "@/features/orders";
-
 export async function listStock() {
   const supabase = createBrowserSupabase();
   const { data, error } = await supabase.from("warehouse_stock").select("*");
@@ -27,6 +25,7 @@ export async function releaseStock(input: {
   warehouseId: string;
   bagCount: number;
   kgPerBag: number;
+  releasedTo: string;
   recordedBy: string;
 }) {
   const row = {
@@ -38,11 +37,22 @@ export async function releaseStock(input: {
     order_id: input.orderId,
     recorded_by: input.recordedBy,
   };
+  const now = new Date().toISOString();
   try {
     const supabase = createBrowserSupabase();
     const { error } = await supabase.from("stock_movements").insert(row);
     if (error) throw error;
-    await setOrderStatus(input.orderId, "delivered");
+    const { error: orderError } = await supabase
+      .from("orders")
+      .update({
+        status: "dispatched",
+        dispatched_at: now,
+        released_bag_count: input.bagCount,
+        released_to: input.releasedTo,
+        released_by: input.recordedBy,
+      })
+      .eq("id", input.orderId);
+    if (orderError) throw orderError;
   } catch (error) {
     if (isOfflineError(error)) {
       await enqueueWrite({ id: row.id, tableName: "stock_movements", payload: row });

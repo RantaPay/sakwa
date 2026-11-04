@@ -1,11 +1,12 @@
 "use client";
 
-import { Button, Field, Input, Select } from "@sakwa/ui";
+import { Button, ConfirmDialog, Field, Input, Select } from "@sakwa/ui";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { listUsersByRole } from "@/features/users";
 import { queryKeys } from "@/lib/query-keys";
 import {
   assignStaff,
+  closeWarehouse,
   createWarehouse,
   listWarehouseStaff,
   listWarehouses,
@@ -14,7 +15,10 @@ import {
 export function StoreForm() {
   const client = useQueryClient();
   const stores = useQuery({ queryKey: queryKeys.warehouses, queryFn: listWarehouses });
-  const staff = useQuery({ queryKey: queryKeys.warehouseStaff, queryFn: listWarehouseStaff });
+  const staff = useQuery({
+    queryKey: queryKeys.warehouseStaff,
+    queryFn: listWarehouseStaff,
+  });
   const people = useQuery({
     queryKey: ["users", "warehouse"],
     queryFn: () => listUsersByRole("warehouse"),
@@ -29,13 +33,19 @@ export function StoreForm() {
   }
 
   async function onAssign(formData: FormData) {
-    await assignStaff(String(formData.get("warehouseId")), String(formData.get("userId")));
+    await assignStaff(
+      String(formData.get("warehouseId")),
+      String(formData.get("userId")),
+    );
     await client.invalidateQueries({ queryKey: queryKeys.warehouseStaff });
   }
 
   return (
     <div className="space-y-8">
-      <form action={onCreate} className="grid gap-4 rounded-lg border border-border p-5 md:grid-cols-3">
+      <form
+        action={onCreate}
+        className="grid gap-4 rounded-lg border border-border p-5 md:grid-cols-3"
+      >
         <Field label="Store name" htmlFor="name">
           <Input id="name" name="name" required />
         </Field>
@@ -46,15 +56,47 @@ export function StoreForm() {
           <Button type="submit">Add store</Button>
         </div>
       </form>
-      <form action={onAssign} className="grid gap-4 rounded-lg border border-border p-5 md:grid-cols-3">
+      <ul className="divide-y divide-border rounded-lg border border-border">
+        {(stores.data ?? [])
+          .filter((row) => row.is_active !== false)
+          .map((row) => (
+            <li key={row.id} className="flex items-center justify-between gap-3 p-4">
+              <div>
+                <p className="font-semibold">{row.name}</p>
+                <p className="text-sm text-muted">{row.location || "No location"}</p>
+              </div>
+              <ConfirmDialog
+                title={`Delete ${row.name}`}
+                body="The store leaves the lists. Past rice and orders stay on the books."
+                confirmLabel="Delete store"
+                tone="danger"
+                onConfirm={() =>
+                  void closeWarehouse(row.id).then(() =>
+                    client.invalidateQueries({ queryKey: queryKeys.warehouses }),
+                  )
+                }
+              >
+                <Button type="button" size="sm" variant="danger">
+                  Delete
+                </Button>
+              </ConfirmDialog>
+            </li>
+          ))}
+      </ul>
+      <form
+        action={onAssign}
+        className="grid gap-4 rounded-lg border border-border p-5 md:grid-cols-3"
+      >
         <Field label="Store" htmlFor="warehouseId">
           <Select id="warehouseId" name="warehouseId" required>
             <option value="">Choose a store</option>
-            {(stores.data ?? []).map((row) => (
-              <option key={row.id} value={row.id}>
-                {row.name}
-              </option>
-            ))}
+            {(stores.data ?? [])
+              .filter((row) => row.is_active !== false)
+              .map((row) => (
+                <option key={row.id} value={row.id}>
+                  {row.name}
+                </option>
+              ))}
           </Select>
         </Field>
         <Field label="Store staff" htmlFor="userId">
@@ -75,11 +117,15 @@ export function StoreForm() {
       </form>
       <ul className="divide-y divide-border rounded-lg border border-border">
         {(stores.data ?? []).map((row) => {
-          const assigned = (staff.data ?? []).filter((item) => item.warehouse_id === row.id);
+          const assigned = (staff.data ?? []).filter(
+            (item) => item.warehouse_id === row.id,
+          );
           return (
             <li key={row.id} className="p-4">
               <p className="font-semibold">{row.name}</p>
-              <p className="text-sm text-muted">{row.location ?? "No location written"}</p>
+              <p className="text-sm text-muted">
+                {row.location ?? "No location written"}
+              </p>
               <p className="mt-1 text-xs text-muted">{assigned.length} staff assigned</p>
             </li>
           );

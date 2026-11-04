@@ -7,7 +7,7 @@ export default function AdminUsersPage() {
       <PageHeading
         mark="people"
         title="People"
-        body="Staff and investors are created here. Customers sign up themselves."
+        body="Create every person from here. Customers, agents, stores, and the rest."
       />
       <PersonForm />
     </div>

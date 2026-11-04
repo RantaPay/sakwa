@@ -3,6 +3,7 @@ export type DeliveryStatus = (typeof DELIVERY_STATUSES)[number];
 
 export const ORDER_STATUSES = [
   "placed",
+  "approved",
   "payment_recorded",
   "payment_confirmed",
   "dispatched",

@@ -49,6 +49,8 @@ const MARKS: Record<string, Icon> = {
   trade_store: ChartLineUp,
   buying_price: Scales,
   cash_given: HandCoins,
+  agent_pay: HandCoins,
+  order_desk: ClipboardText,
   cash_received: Wallet,
   deliveries: Truck,
   field_buyers: UsersThree,
@@ -126,6 +128,7 @@ const ADMIN_HREF: Record<string, Icon> = {
   "/admin/settings": Gear,
   "/admin/audit": ClockCounterClockwise,
   "/admin/profile": User,
+  "/admin/accounts": UsersThree,
 };
 
 const ROLE_HOME = /^\/(admin|director|accountant|warehouse|agent|investor|customer)\/?$/;

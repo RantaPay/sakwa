@@ -3,13 +3,23 @@
 import { formatNaira } from "@sakwa/utils";
 import { useQuery } from "@tanstack/react-query";
 import { PageHeading } from "@/components/page-heading";
-import { AdvanceForm, AdvanceList, listAgentBalances } from "@/features/advances";
+import {
+  AdvanceList,
+  AgentPayScreen,
+  PayQueue,
+  listAgentBalances,
+} from "@/features/advances";
 import { DeliveryDecisionList, DeliveryForm, DeliveryList } from "@/features/deliveries";
 import { EnquiryList } from "@/features/enquiries";
-import { InvestmentForm, InvestmentList, InvestmentRequestList, InvestorDesk } from "@/features/investments";
+import {
+  InvestmentForm,
+  InvestmentList,
+  InvestmentRequestList,
+  InvestorDesk,
+} from "@/features/investments";
 import { PaymentBoard, TransactionBoard } from "@/features/money";
 import { TradeBoard } from "@/features/overview";
-import { OrderForm, OrderList, OrderPriceList } from "@/features/orders";
+import { OrderDesk, OrderForm, OrderList, OrderPriceList } from "@/features/orders";
 import { PriceCard } from "@/features/prices/price-card";
 import { AnalyticsPanel } from "@/features/analytics";
 import { ReportsPanel } from "@/features/reports";
@@ -35,11 +45,16 @@ function StoreTradeScreen() {
     queryFn: () => listAssignedWarehouseIds(user?.id as string),
   });
   if (!assigned.data) return null;
-  return <TradeBoard warehouseIds={assigned.data} title="Expense / interest for this store" />;
+  return (
+    <TradeBoard warehouseIds={assigned.data} title="Expense / interest for this store" />
+  );
 }
 
 function FieldBuyersScreen() {
-  const balances = useQuery({ queryKey: queryKeys.agentBalances, queryFn: listAgentBalances });
+  const balances = useQuery({
+    queryKey: queryKeys.agentBalances,
+    queryFn: listAgentBalances,
+  });
   const people = useQuery({ queryKey: queryKeys.users, queryFn: listUsers });
   const names = new Map((people.data ?? []).map((row) => [row.id, row.full_name]));
   return (
@@ -67,7 +82,11 @@ function StoresScreen() {
   const names = new Map((stores.data ?? []).map((row) => [row.id, row.name]));
   return (
     <div>
-      <PageHeading mark="stores" title="Stores" body="Confirmed bags in, minus bags released." />
+      <PageHeading
+        mark="stores"
+        title="Stores"
+        body="Confirmed bags in, minus bags released."
+      />
       <ul className="divide-y divide-border rounded-lg border border-border">
         {(stock.data ?? []).map((row) => (
           <li key={row.warehouse_id} className="p-4">
@@ -85,7 +104,11 @@ function OwnCashScreen() {
   const { data: user } = useAuthUser();
   return (
     <div>
-      <PageHeading mark="cash_received" title="Cash received" body="Every amount given to you by the enterprise." />
+      <PageHeading
+        mark="cash_received"
+        title="Cash received"
+        body="Every amount given to you by the enterprise."
+      />
       {user ? <AdvanceList agentId={user.id} /> : null}
     </div>
   );
@@ -110,7 +133,11 @@ function OwnReturnsScreen() {
   const { data: user } = useAuthUser();
   return (
     <div>
-      <PageHeading mark="investor_returns" title="Returns" body="Profit credited to you, week by week." />
+      <PageHeading
+        mark="investor_returns"
+        title="Returns"
+        body="Profit credited to you, week by week."
+      />
       {user ? <ReturnList investorId={user.id} /> : null}
     </div>
   );
@@ -151,17 +178,28 @@ export function FeatureBody({
     case "cash_given":
       return (
         <div>
-          <PageHeading mark="cash_given" title="Cash given" body="Record cash given to an agent." />
-          <AdvanceForm />
-          <AdvanceList />
+          <PageHeading
+            mark="cash_given"
+            title="Cash given"
+            body="Pay the requests the admin sent. A receipt is ready after you pay."
+          />
+          <PayQueue />
         </div>
       );
+    case "agent_pay":
+      return <AgentPayScreen />;
+    case "order_desk":
+      return <OrderDesk />;
     case "cash_received":
       return <OwnCashScreen />;
     case "deliveries":
       return (
         <div className="space-y-6">
-          <PageHeading mark="deliveries" title="Deliveries" body="Record bags supplied to a store." />
+          <PageHeading
+            mark="deliveries"
+            title="Deliveries"
+            body="Record bags supplied to a store."
+          />
           <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
             <section className="lg:col-span-5" aria-label="Record delivery">
               <DeliveryForm />
@@ -201,7 +239,11 @@ export function FeatureBody({
     case "stock":
       return (
         <div className="space-y-10">
-          <PageHeading mark="stock" title="Stock" body="Bags on hand, plus every in and out." />
+          <PageHeading
+            mark="stock"
+            title="Stock"
+            body="Bags on hand, plus every in and out."
+          />
           <StockBoard />
           <MovementList />
         </div>
@@ -254,7 +296,11 @@ export function FeatureBody({
     case "reports":
       return (
         <div>
-          <PageHeading mark="reports" title="Reports" body="Download the money list as Excel or PDF." />
+          <PageHeading
+            mark="reports"
+            title="Reports"
+            body="Download the money list as Excel or PDF."
+          />
           <ReportsPanel />
         </div>
       );
@@ -283,7 +329,11 @@ export function FeatureBody({
     case "capital":
       return (
         <div>
-          <PageHeading mark="capital" title="Capital" body="Write in the amount each investor put in." />
+          <PageHeading
+            mark="capital"
+            title="Capital"
+            body="Write in the amount each investor put in."
+          />
           <InvestmentForm />
           <InvestmentList />
         </div>
@@ -341,7 +391,11 @@ export function FeatureBody({
     case "profile":
       return (
         <div>
-          <PageHeading mark="profile" title="Profile" body="Keep the details for your role current." />
+          <PageHeading
+            mark="profile"
+            title="Profile"
+            body="Keep the details for your role current."
+          />
           <ProfileForm />
         </div>
       );
