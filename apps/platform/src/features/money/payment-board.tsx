@@ -9,6 +9,7 @@ import {
 } from "@sakwa/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { toast } from "sonner";
 import { listAllOrders } from "@/features/orders";
 import { printReceipt } from "@/features/receipts/print-receipt";
 import { queryKeys } from "@/lib/query-keys";
@@ -29,9 +30,11 @@ export function PaymentBoard() {
   const save = useMutation({
     mutationFn: recordPayment,
     onSuccess: async () => {
+      toast.success("Payment recorded.");
       await client.invalidateQueries({ queryKey: queryKeys.payments });
       await client.invalidateQueries({ queryKey: queryKeys.orders() });
     },
+    onError: (err: Error) => toast.error(err.message),
   });
 
   const confirm = useMutation({
@@ -44,7 +47,9 @@ export function PaymentBoard() {
       orderId: string;
       userId: string;
     }) => confirmPayment(id, orderId, userId),
+    onError: (err: Error) => toast.error(err.message),
     onSuccess: async () => {
+      toast.success("Payment confirmed.");
       await client.invalidateQueries({ queryKey: queryKeys.payments });
       await client.invalidateQueries({ queryKey: queryKeys.orders() });
     },

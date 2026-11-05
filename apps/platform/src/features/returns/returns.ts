@@ -1,8 +1,4 @@
-import {
-  calculateInvestorReturn,
-  createId,
-  type ReturnFormulaKind,
-} from "@sakwa/utils";
+import { calculateInvestorReturn, createId, type ReturnFormulaKind } from "@sakwa/utils";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { listPositions } from "@/features/investments";
 
@@ -32,6 +28,7 @@ export async function applyReturnCycle(input: {
     0n,
   );
   const supabase = createBrowserSupabase();
+  let written = 0;
 
   for (const position of positions) {
     const capital = BigInt(position.capital_kobo ?? 0);
@@ -52,5 +49,7 @@ export async function applyReturnCycle(input: {
       formula_kind: input.kind,
     });
     if (error) throw error;
+    written += 1;
   }
+  return written;
 }

@@ -15,9 +15,15 @@ export function useReturns(investorId?: string) {
 
   const apply = useMutation({
     mutationFn: applyReturnCycle,
-    onSuccess: () => {
+    onSuccess: (written) => {
       void client.invalidateQueries({ queryKey: queryKeys.returns() });
-      toast.success("Return rows were written for this week.");
+      if (written === 0) {
+        toast.error("No investor has capital on the books, so no returns were written.");
+        return;
+      }
+      toast.success(
+        `Returns written for ${written} investor${written === 1 ? "" : "s"} this week.`,
+      );
     },
     onError: (error: Error) => toast.error(error.message),
   });
