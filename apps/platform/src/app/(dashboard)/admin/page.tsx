@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DashboardHome } from "@/components/dashboard-home";
 import { WelcomeCard } from "@/components/welcome-card";
 import { OwingBoard } from "@/features/balances/owing-board";
+import { FiguresProvider } from "@/features/money/figures";
 import { PendingOrdersCard } from "@/features/orders";
 import { OverviewBoard } from "@/features/overview";
 import { PriceCard } from "@/features/prices/price-card";
@@ -12,6 +13,14 @@ import { listUsers } from "@/features/users";
 import { queryKeys } from "@/lib/query-keys";
 
 export default function AdminHomePage() {
+  return (
+    <FiguresProvider>
+      <AdminHome />
+    </FiguresProvider>
+  );
+}
+
+function AdminHome() {
   const people = useQuery({ queryKey: queryKeys.users, queryFn: listUsers });
   const stores = useQuery({ queryKey: queryKeys.warehouses, queryFn: listWarehouses });
 
@@ -20,6 +29,7 @@ export default function AdminHomePage() {
       greeting={
         <WelcomeCard
           role="admin"
+          figureToggle
           body="The whole house is on this page. People, stores, bags, and money, in one view."
           stats={[
             { label: "People", value: `${people.data?.length ?? 0}` },

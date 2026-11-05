@@ -66,7 +66,10 @@ export function FigureToggle() {
       onClick={toggle}
       aria-pressed={hidden}
       data-figures-keep=""
-      className="inline-flex min-h-12 items-center gap-2 rounded-full border border-border bg-surface px-4 text-base font-semibold text-foreground"
+      // The card-paper rule in tokens.css paints a grain motif on rounded
+      // bg-surface elements; a button should stay plain.
+      style={{ backgroundImage: "none" }}
+      className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border bg-surface px-4 text-sm font-semibold text-foreground sm:text-base"
     >
       <Icon size={22} weight="light" aria-hidden />
       {hidden ? "Show figures" : "Hide figures"}
