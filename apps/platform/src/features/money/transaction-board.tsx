@@ -5,6 +5,7 @@ import { formatNaira, lagosToday } from "@sakwa/utils";
 import { transactionSchema } from "@sakwa/validators";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
 import { useAuthUser } from "@/lib/use-auth-user";
 import { listTransactions, recordTransaction } from "./transactions";
@@ -18,8 +19,10 @@ export function TransactionBoard() {
   const save = useMutation({
     mutationFn: recordTransaction,
     onSuccess: () => {
+      toast.success("Money recorded.");
       void client.invalidateQueries({ queryKey: queryKeys.transactions });
     },
+    onError: (err: Error) => toast.error(err.message),
   });
 
   async function onSubmit(formData: FormData) {
