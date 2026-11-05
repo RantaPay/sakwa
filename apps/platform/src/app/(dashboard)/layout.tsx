@@ -1,6 +1,7 @@
 import { isRole, type Role } from "@sakwa/types";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { RealtimeSync } from "@/components/realtime-sync";
 import { BottomNav } from "@/components/shell/bottom-nav";
 import { DashboardFrame } from "@/components/shell/dashboard-frame";
 import { Sidebar } from "@/components/shell/sidebar";
@@ -45,6 +46,7 @@ export default async function DashboardLayout({
 
   return (
     <PermissionProvider initial={grants}>
+      <RealtimeSync />
       <div className="flex h-[100dvh] overflow-hidden">
         <Sidebar role={active} />
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
