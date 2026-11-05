@@ -110,7 +110,8 @@ body {
   }
   100% {
     opacity: 0;
-    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scale(1);
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
+      rotate(var(--rot)) scale(1);
   }
 }
 
@@ -140,4 +141,16 @@ body {
     transform: none;
     will-change: auto;
   }
+}
+
+/* "Hide figures": blurs every number on the page (see features/money/figures.tsx). */
+[data-figure-mask] {
+  filter: blur(0.42em);
+  user-select: none;
+}
+
+input[data-figure-mask]:focus,
+textarea[data-figure-mask]:focus,
+select[data-figure-mask]:focus {
+  filter: none;
 }
