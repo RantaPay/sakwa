@@ -5,54 +5,25 @@ import { Field, Input, PasswordInput } from "@sakwa/ui";
 import { loginSchema } from "@sakwa/validators";
 import { useState, type FormEvent } from "react";
 import { AuthShell } from "@/components/auth-shell";
-import { isDemoMode, writeDemoSession, type DemoAccount } from "@/lib/demo/accounts";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 
 export function LoginForm({ presetEmail }: { presetEmail: string }) {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
-  const demo = isDemoMode();
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     const form = new FormData(event.currentTarget);
-    const rawEmail = String(form.get("email") ?? "").trim();
-    const rawPassword = String(form.get("password") ?? "");
-    const email =
-      demo && rawEmail && !rawEmail.includes("@") ? `${rawEmail}@gmail.com` : rawEmail;
     const parsed = loginSchema.safeParse({
-      email,
-      password: rawPassword,
+      email: String(form.get("email") ?? "").trim(),
+      password: String(form.get("password") ?? ""),
     });
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Check your details.");
       return;
     }
     setPending(true);
-    if (demo) {
-      try {
-        const response = await fetch("/api/demo/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(parsed.data),
-        });
-        setPending(false);
-        if (!response.ok) {
-          setError("Email or password is not right.");
-          return;
-        }
-        const payload = (await response.json().catch(() => null)) as {
-          account?: DemoAccount;
-        } | null;
-        if (payload?.account) writeDemoSession(payload.account);
-        window.location.href = "/";
-      } catch {
-        setPending(false);
-        setError("Could not sign in. Try again in a moment.");
-      }
-      return;
-    }
     const supabase = createBrowserSupabase();
     const { error: authError } = await supabase.auth.signInWithPassword(parsed.data);
     setPending(false);

@@ -5,21 +5,15 @@ import { Field, Input, PasswordInput } from "@sakwa/ui";
 import { signupSchema } from "@sakwa/validators";
 import { useState, type FormEvent } from "react";
 import { AuthShell } from "@/components/auth-shell";
-import { isDemoMode } from "@/lib/demo/accounts";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 
 export default function SignupPage() {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
-  const demo = isDemoMode();
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    if (demo) {
-      setError("Creating an account is off right now. Sign in instead.");
-      return;
-    }
     const form = new FormData(event.currentTarget);
     const parsed = signupSchema.safeParse({
       fullName: String(form.get("fullName") ?? ""),
@@ -74,7 +68,9 @@ export default function SignupPage() {
         </p>
       }
     >
-      <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted">New customer</p>
+      <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted">
+        New customer
+      </p>
       <h2 className="mt-2 text-3xl font-extrabold tracking-tight">Create an account</h2>
       <p className="mt-2 text-base text-muted">For buying rice only.</p>
       <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-4" noValidate>

@@ -1,13 +1,9 @@
 import type { Role } from "@sakwa/types";
-import { createId } from "@sakwa/utils";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 
 export async function listUsers() {
   const supabase = createBrowserSupabase();
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .order("full_name");
+  const { data, error } = await supabase.from("profiles").select("*").order("full_name");
   if (error) throw error;
   return data;
 }
@@ -32,7 +28,11 @@ export async function listUsersByRole(role: Role) {
 
 export async function getProfile(id: string) {
   const supabase = createBrowserSupabase();
-  const { data, error } = await supabase.from("profiles").select("*").eq("id", id).single();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", id)
+    .single();
   if (error) throw error;
   return data;
 }
@@ -74,30 +74,9 @@ export async function updateProfile(input: {
 
 export async function setUserActive(id: string, isActive: boolean) {
   const supabase = createBrowserSupabase();
-  const { error } = await supabase.from("profiles").update({ is_active: isActive }).eq("id", id);
+  const { error } = await supabase
+    .from("profiles")
+    .update({ is_active: isActive })
+    .eq("id", id);
   if (error) throw error;
-}
-
-export async function createPersonLocal(input: {
-  fullName: string;
-  email: string;
-  phone: string;
-  roles: Role[];
-  primaryRole: Role;
-}) {
-  const supabase = createBrowserSupabase();
-  const id = createId();
-  const { error: profileError } = await supabase.from("profiles").insert({
-    id,
-    full_name: input.fullName,
-    email: input.email,
-    phone: input.phone,
-    primary_role: input.primaryRole,
-    is_active: true,
-  });
-  if (profileError) throw profileError;
-  const { error: roleError } = await supabase.from("user_roles").insert(
-    input.roles.map((role) => ({ user_id: id, role })),
-  );
-  if (roleError) throw roleError;
 }

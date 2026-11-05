@@ -7,7 +7,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
 import { createUserAction } from "./create-user";
-import { createPersonLocal, listUsers, setUserActive } from "./users";
+import { listUsers, setUserActive } from "./users";
 
 export function PersonForm() {
   const client = useQueryClient();
@@ -30,15 +30,11 @@ export function PersonForm() {
     };
     setPending(true);
     try {
-      if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
-        await createPersonLocal(payload);
-      } else {
-        const result = await createUserAction(payload);
-        if (!result.ok) {
-          setError(result.error);
-          toast.error(result.error);
-          return;
-        }
+      const result = await createUserAction(payload);
+      if (!result.ok) {
+        setError(result.error);
+        toast.error(result.error);
+        return;
       }
       formRef.current?.reset();
       toast.success(`${payload.fullName.trim()} was created`, {

@@ -15,8 +15,6 @@
     "test": "turbo test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "demo:clear": "psql \"${DATABASE_URL:-postgresql://postgres:postgres@127.0.0.1:54322/postgres}\" -v ON_ERROR_STOP=1 -f supabase/clear-demo.sql",
-    "demo:seed": "psql \"${DATABASE_URL:-postgresql://postgres:postgres@127.0.0.1:54322/postgres}\" -v ON_ERROR_STOP=1 -f supabase/seed.sql",
     "prepare": "husky"
   },
   "devDependencies": {

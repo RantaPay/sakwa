@@ -1,9 +1,8 @@
 import { ROLE_HOME, isRole, type Role } from "@sakwa/types";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { DEMO_COOKIE, isDemoMode, parseDemoCookie } from "@/lib/demo/accounts";
-import { actingRole, decodeGrantCookie, pathAccess } from "@/features/permissions/access";
-import { PERMISSION_COOKIE, type PermissionRow } from "@/features/permissions/catalog";
+import { actingRole, pathAccess } from "@/features/permissions/access";
+import type { PermissionRow } from "@/features/permissions/catalog";
 
 const ROLE_PREFIXES: Role[] = [
   "admin",
@@ -33,30 +32,13 @@ export async function proxy(request: NextRequest) {
   requestHeaders.set("x-pathname", path);
   const response = NextResponse.next({ request: { headers: requestHeaders } });
   const isAuth = path.startsWith("/login") || path.startsWith("/signup");
-  const isPublicApi = path.startsWith("/api/enquiries") || path.startsWith("/api/demo");
+  const isPublicApi = path.startsWith("/api/enquiries");
 
   response.headers.set("x-pathname", path);
 
-  const isStaticAsset = /\.(?:svg|png|jpg|jpeg|gif|webp|ico|json|webmanifest|js|map|txt)$/i.test(
-    path,
-  );
+  const isStaticAsset =
+    /\.(?:svg|png|jpg|jpeg|gif|webp|ico|json|webmanifest|js|map|txt)$/i.test(path);
   if (isPublicApi || isStaticAsset) return response;
-
-  if (isDemoMode()) {
-    const session = parseDemoCookie(request.cookies.get(DEMO_COOKIE)?.value);
-    if (!session && !isAuth) return redirectTo(request, "/login", path);
-    if (session && isAuth) return redirectTo(request, "/");
-    if (!session) return response;
-    const grants = decodeGrantCookie(request.cookies.get(PERMISSION_COOKIE)?.value);
-    const access = guardPath(path, session.role, grants);
-    if (access === "deny") return redirectTo(request, ROLE_HOME[session.role]);
-    if (access === "allow") return response;
-    const prefix = ROLE_PREFIXES.find((role) => path.startsWith(`/${role}`));
-    if (prefix && prefix !== session.role) {
-      return redirectTo(request, ROLE_HOME[session.role]);
-    }
-    return response;
-  }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

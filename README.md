@@ -4,10 +4,10 @@ Record-keeping for rice buying, selling, and investor capital. Payments happen o
 
 Two apps share one backend:
 
-| App | Domain | Purpose |
-| --- | --- | --- |
-| `apps/landing` | sakwaagro.com | Public site and investor enquiry form |
-| `apps/platform` | app.sakwaagro.com | Login and the seven role dashboards |
+| App             | Domain            | Purpose                               |
+| --------------- | ----------------- | ------------------------------------- |
+| `apps/landing`  | sakwaagro.com     | Public site and investor enquiry form |
+| `apps/platform` | app.sakwaagro.com | Login and the seven role dashboards   |
 
 No payment is taken on the site.
 
@@ -67,16 +67,14 @@ cp .env.example apps/landing/.env.local
 cp apps/platform/.env.example apps/platform/.env.local
 ```
 
-Local demo (no Docker, no database): keep `NEXT_PUBLIC_DEMO_MODE=true` in `apps/platform/.env.local` and sign in with the emails in `demo.md`.
-
-When you are ready for a real project:
+The platform always reads the Supabase project set in `.env.local`. There is no demo or sample-data mode. For a local database:
 
 ```bash
 supabase start
 supabase db reset
 ```
 
-Set `NEXT_PUBLIC_DEMO_MODE=false` and put the real project URL and keys in `.env.local`. `pnpm demo:clear` removes seeded demo users from local Postgres. Customers can also sign up at `/signup`. After the first admin exists, create other people from `/admin/users`.
+Put the project URL and keys in `.env.local`. Customers can also sign up at `/signup`. After the first admin exists, create other people from `/admin/users`.
 
 Run:
 
@@ -89,14 +87,14 @@ Landing enquiry posts to `NEXT_PUBLIC_ENQUIRY_ENDPOINT` (platform `/api/enquirie
 
 ## Scripts
 
-| Script | What it does |
-| --- | --- |
-| `pnpm dev` | Both apps |
-| `pnpm lint` | ESLint, 400-line cap |
-| `pnpm typecheck` | `tsc --noEmit` |
-| `pnpm test` | Vitest (money rules + mapping) |
+| Script                              | What it does                          |
+| ----------------------------------- | ------------------------------------- |
+| `pnpm dev`                          | Both apps                             |
+| `pnpm lint`                         | ESLint, 400-line cap                  |
+| `pnpm typecheck`                    | `tsc --noEmit`                        |
+| `pnpm test`                         | Vitest (money rules + mapping)        |
 | `pnpm --filter @sakwa/platform e2e` | Playwright (needs a running platform) |
-| `pnpm build` | Both apps |
+| `pnpm build`                        | Both apps                             |
 
 ## Deploy
 
@@ -119,15 +117,15 @@ Agents and store staff can record deliveries, confirmations, and releases with n
 
 ## Roles
 
-| Route | Who | What they do |
-| --- | --- | --- |
-| `/admin` | Admin | People, stores, history |
-| `/director` | Director | Watch agents and stores, profit requests, enquiries |
+| Route         | Who        | What they do                                                                      |
+| ------------- | ---------- | --------------------------------------------------------------------------------- |
+| `/admin`      | Admin      | People, stores, history                                                           |
+| `/director`   | Director   | Watch agents and stores, profit requests, enquiries                               |
 | `/accountant` | Accountant | Cash given, orders, payments, other money, capital, returns, profit paid, reports |
-| `/warehouse` | Store | Incoming, outgoing, stock |
-| `/agent` | Agent | Cash received, deliveries, balance |
-| `/investor` | Investor | Own capital, returns, profit out |
-| `/customer` | Customer | Orders and profile |
+| `/warehouse`  | Store      | Incoming, outgoing, stock                                                         |
+| `/agent`      | Agent      | Cash received, deliveries, balance                                                |
+| `/investor`   | Investor   | Own capital, returns, profit out                                                  |
+| `/customer`   | Customer   | Orders and profile                                                                |
 
 ## Architecture
 
