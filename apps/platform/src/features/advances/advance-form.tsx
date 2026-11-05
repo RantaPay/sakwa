@@ -1,5 +1,7 @@
 "use client";
 
+import { lagosToday } from "@sakwa/utils";
+
 import { Button, Field, Input, Select } from "@sakwa/ui";
 import { cashAdvanceSchema } from "@sakwa/validators";
 import { useState } from "react";
@@ -40,7 +42,7 @@ export function AdvanceForm() {
           <option value="">Choose an agent</option>
           {(agents.data ?? []).map((person) => (
             <option key={person.id} value={person.id}>
-              {person.full_name}
+              {person.full_name} ({person.email})
             </option>
           ))}
         </Select>
@@ -49,7 +51,13 @@ export function AdvanceForm() {
         <Input id="amount" name="amount" inputMode="numeric" required />
       </Field>
       <Field label="Date" htmlFor="advancedOn">
-        <Input id="advancedOn" name="advancedOn" type="date" required />
+        <Input
+          id="advancedOn"
+          name="advancedOn"
+          type="date"
+          required
+          defaultValue={lagosToday()}
+        />
       </Field>
       <Field label="Notes" htmlFor="notes">
         <Input id="notes" name="notes" />

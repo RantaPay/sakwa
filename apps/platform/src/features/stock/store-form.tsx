@@ -2,6 +2,7 @@
 
 import { Button, ConfirmDialog, Field, Input, Select } from "@sakwa/ui";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { listUsersByRole } from "@/features/users";
 import { queryKeys } from "@/lib/query-keys";
 import {
@@ -24,20 +25,46 @@ export function StoreForm() {
     queryFn: () => listUsersByRole("warehouse"),
   });
 
+  const openStores = (stores.data ?? []).filter((row) => row.is_active !== false);
+
+  function failed(error: unknown) {
+    toast.error(
+      error instanceof Error ? error.message : "Something went wrong. Try again.",
+    );
+  }
+
   async function onCreate(formData: FormData) {
-    await createWarehouse({
-      name: String(formData.get("name") ?? ""),
-      location: String(formData.get("location") ?? ""),
-    });
-    await client.invalidateQueries({ queryKey: queryKeys.warehouses });
+    const name = String(formData.get("name") ?? "").trim();
+    try {
+      await createWarehouse({ name, location: String(formData.get("location") ?? "") });
+      await client.invalidateQueries({ queryKey: queryKeys.warehouses });
+      toast.success(`${name} was added.`);
+    } catch (error) {
+      failed(error);
+    }
   }
 
   async function onAssign(formData: FormData) {
-    await assignStaff(
-      String(formData.get("warehouseId")),
-      String(formData.get("userId")),
-    );
-    await client.invalidateQueries({ queryKey: queryKeys.warehouseStaff });
+    try {
+      await assignStaff(
+        String(formData.get("warehouseId")),
+        String(formData.get("userId")),
+      );
+      await client.invalidateQueries({ queryKey: queryKeys.warehouseStaff });
+      toast.success("Staff assigned to the store.");
+    } catch (error) {
+      failed(error);
+    }
+  }
+
+  async function onClose(id: string, name: string) {
+    try {
+      await closeWarehouse(id);
+      await client.invalidateQueries({ queryKey: queryKeys.warehouses });
+      toast.success(`${name} was deleted.`);
+    } catch (error) {
+      failed(error);
+    }
   }
 
   return (
@@ -57,31 +84,25 @@ export function StoreForm() {
         </div>
       </form>
       <ul className="divide-y divide-border rounded-lg border border-border">
-        {(stores.data ?? [])
-          .filter((row) => row.is_active !== false)
-          .map((row) => (
-            <li key={row.id} className="flex items-center justify-between gap-3 p-4">
-              <div>
-                <p className="font-semibold">{row.name}</p>
-                <p className="text-sm text-muted">{row.location || "No location"}</p>
-              </div>
-              <ConfirmDialog
-                title={`Delete ${row.name}`}
-                body="The store leaves the lists. Past rice and orders stay on the books."
-                confirmLabel="Delete store"
-                tone="danger"
-                onConfirm={() =>
-                  void closeWarehouse(row.id).then(() =>
-                    client.invalidateQueries({ queryKey: queryKeys.warehouses }),
-                  )
-                }
-              >
-                <Button type="button" size="sm" variant="danger">
-                  Delete
-                </Button>
-              </ConfirmDialog>
-            </li>
-          ))}
+        {openStores.map((row) => (
+          <li key={row.id} className="flex items-center justify-between gap-3 p-4">
+            <div>
+              <p className="font-semibold">{row.name}</p>
+              <p className="text-sm text-muted">{row.location || "No location"}</p>
+            </div>
+            <ConfirmDialog
+              title={`Delete ${row.name}`}
+              body="The store leaves the lists. Past rice and orders stay on the books."
+              confirmLabel="Delete store"
+              tone="danger"
+              onConfirm={() => void onClose(row.id, row.name)}
+            >
+              <Button type="button" size="sm" variant="danger">
+                Delete
+              </Button>
+            </ConfirmDialog>
+          </li>
+        ))}
       </ul>
       <form
         action={onAssign}
@@ -90,13 +111,11 @@ export function StoreForm() {
         <Field label="Store" htmlFor="warehouseId">
           <Select id="warehouseId" name="warehouseId" required>
             <option value="">Choose a store</option>
-            {(stores.data ?? [])
-              .filter((row) => row.is_active !== false)
-              .map((row) => (
-                <option key={row.id} value={row.id}>
-                  {row.name}
-                </option>
-              ))}
+            {openStores.map((row) => (
+              <option key={row.id} value={row.id}>
+                {row.name}
+              </option>
+            ))}
           </Select>
         </Field>
         <Field label="Store staff" htmlFor="userId">
@@ -104,7 +123,7 @@ export function StoreForm() {
             <option value="">Choose a person</option>
             {(people.data ?? []).map((person) => (
               <option key={person.id} value={person.id}>
-                {person.full_name}
+                {person.full_name} ({person.email})
               </option>
             ))}
           </Select>
@@ -116,7 +135,7 @@ export function StoreForm() {
         </div>
       </form>
       <ul className="divide-y divide-border rounded-lg border border-border">
-        {(stores.data ?? []).map((row) => {
+        {openStores.map((row) => {
           const assigned = (staff.data ?? []).filter(
             (item) => item.warehouse_id === row.id,
           );

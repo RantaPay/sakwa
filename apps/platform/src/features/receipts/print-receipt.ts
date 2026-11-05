@@ -9,10 +9,8 @@ export function printReceipt(title: string, lines: { label: string; value: strin
         `<tr><th>${escapeHtml(line.label)}</th><td>${escapeHtml(line.value)}</td></tr>`,
     )
     .join("");
-  const popup = window.open("", "sakwa-receipt", "noopener,width=520,height=720");
-  if (!popup) return;
-  popup.document.write(`<!DOCTYPE html>
-<html><head><title>${escapeHtml(title)}</title>
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>
 <style>
   body { font-family: "Plus Jakarta Sans", sans-serif; color: #4c2922; margin: 32px; }
   h1 { font-size: 22px; margin: 0 0 4px; }
@@ -25,7 +23,11 @@ export function printReceipt(title: string, lines: { label: string; value: strin
   <h1>Sakwa Agro Enterprise</h1>
   <p>${escapeHtml(title)}</p>
   <table>${rows}</table>
-  <script>window.print()<\/script>
-</body></html>`);
-  popup.document.close();
+  <script>window.addEventListener("load", () => window.print())<\/script>
+</body></html>`;
+  // A "noopener" window returns null, so writing into it left the receipt blank.
+  // Open the receipt as its own page instead.
+  const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+  window.open(url, "_blank", "noopener");
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }

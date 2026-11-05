@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Field, Input, Select, Textarea } from "@sakwa/ui";
-import { formatNaira } from "@sakwa/utils";
+import { formatNaira, lagosToday } from "@sakwa/utils";
 import { deliverySchema } from "@sakwa/validators";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -41,7 +41,10 @@ export function DeliveryForm() {
   }
 
   return (
-    <form action={onSubmit} className="grid gap-4 rounded-xl border border-border bg-white p-5">
+    <form
+      action={onSubmit}
+      className="grid gap-4 rounded-xl border border-border bg-white p-5"
+    >
       <div className="flex items-center justify-between rounded-lg border border-border bg-wash px-3.5 py-2.5">
         <span className="text-xs font-medium text-muted">Amount left</span>
         <span className="font-mono text-base font-semibold text-foreground">
@@ -72,7 +75,13 @@ export function DeliveryForm() {
           <Input id="amountSpent" name="amountSpent" inputMode="numeric" required />
         </Field>
         <Field label="Date" htmlFor="deliveredOn">
-          <Input id="deliveredOn" name="deliveredOn" type="date" required />
+          <Input
+            id="deliveredOn"
+            name="deliveredOn"
+            type="date"
+            required
+            defaultValue={lagosToday()}
+          />
         </Field>
       </div>
       <Field label="Notes" htmlFor="notes">

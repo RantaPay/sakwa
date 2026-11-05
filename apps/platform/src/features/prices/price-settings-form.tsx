@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Field, Input, Textarea } from "@sakwa/ui";
-import { formatNaira } from "@sakwa/utils";
+import { formatNaira, lagosToday } from "@sakwa/utils";
 import { marketPriceSchema } from "@sakwa/validators";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -10,20 +10,14 @@ import { queryKeys } from "@/lib/query-keys";
 import { useAuthUser } from "@/lib/use-auth-user";
 import { listMarketPrices, recordMarketPrice } from "./market-prices";
 
-function lagosToday() {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Africa/Lagos",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-}
-
 export function PriceSettingsForm() {
   const { data: user } = useAuthUser();
   const client = useQueryClient();
   const [error, setError] = useState("");
-  const prices = useQuery({ queryKey: queryKeys.marketPrices, queryFn: listMarketPrices });
+  const prices = useQuery({
+    queryKey: queryKeys.marketPrices,
+    queryFn: listMarketPrices,
+  });
   const latest = prices.data?.[0];
 
   const save = useMutation({
@@ -77,7 +71,10 @@ export function PriceSettingsForm() {
         ) : (
           <p className="mb-4 text-sm text-muted">No price is on the books yet.</p>
         )}
-        <form action={onSubmit} className="grid gap-4 rounded-lg border border-border p-5">
+        <form
+          action={onSubmit}
+          className="grid gap-4 rounded-lg border border-border p-5"
+        >
           <Field label="Buying price per kg in naira" htmlFor="buying">
             <Input id="buying" name="buying" inputMode="decimal" required />
           </Field>
@@ -85,7 +82,13 @@ export function PriceSettingsForm() {
             <Input id="selling" name="selling" inputMode="decimal" required />
           </Field>
           <Field label="From this date" htmlFor="effectiveOn">
-            <Input id="effectiveOn" name="effectiveOn" type="date" required defaultValue={lagosToday()} />
+            <Input
+              id="effectiveOn"
+              name="effectiveOn"
+              type="date"
+              required
+              defaultValue={lagosToday()}
+            />
           </Field>
           <Field label="Notes" htmlFor="notes">
             <Textarea id="notes" name="notes" rows={2} />

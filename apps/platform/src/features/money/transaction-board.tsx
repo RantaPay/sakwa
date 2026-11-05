@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Field, Input } from "@sakwa/ui";
-import { formatNaira } from "@sakwa/utils";
+import { formatNaira, lagosToday } from "@sakwa/utils";
 import { transactionSchema } from "@sakwa/validators";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -43,7 +43,10 @@ export function TransactionBoard() {
     <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
       <section className="lg:col-span-5" aria-label="Record other money">
         <h2 className="mb-4 text-xl font-semibold">Record other money</h2>
-        <form action={onSubmit} className="grid gap-4 rounded-lg border border-border p-5">
+        <form
+          action={onSubmit}
+          className="grid gap-4 rounded-lg border border-border p-5"
+        >
           <Field label="Direction" htmlFor="direction">
             <select
               id="direction"
@@ -58,7 +61,13 @@ export function TransactionBoard() {
             <Input id="amount" name="amount" inputMode="numeric" required />
           </Field>
           <Field label="Date" htmlFor="occurredOn">
-            <Input id="occurredOn" name="occurredOn" type="date" required />
+            <Input
+              id="occurredOn"
+              name="occurredOn"
+              type="date"
+              required
+              defaultValue={lagosToday()}
+            />
           </Field>
           <Field label="Category" htmlFor="category">
             <Input id="category" name="category" required />

@@ -1,5 +1,7 @@
 "use client";
 
+import { lagosToday } from "@sakwa/utils";
+
 import { Button, Field, Input, Select } from "@sakwa/ui";
 import { payRequestSchema } from "@sakwa/validators";
 import { useQuery } from "@tanstack/react-query";
@@ -54,7 +56,7 @@ export function AgentPayScreen() {
             <option value="">Choose an agent</option>
             {(agents.data ?? []).map((person) => (
               <option key={person.id} value={person.id}>
-                {person.full_name}
+                {person.full_name} ({person.email})
               </option>
             ))}
           </Select>
@@ -82,7 +84,13 @@ export function AgentPayScreen() {
           <Input id="kg" name="kg" inputMode="decimal" required />
         </Field>
         <Field label="Date" htmlFor="advancedOn">
-          <Input id="advancedOn" name="advancedOn" type="date" required />
+          <Input
+            id="advancedOn"
+            name="advancedOn"
+            type="date"
+            required
+            defaultValue={lagosToday()}
+          />
         </Field>
         {error ? (
           <p className="text-sm text-danger" role="alert">
