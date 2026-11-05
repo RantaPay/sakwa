@@ -3,7 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
-import { useRealtimeTable } from "@/lib/realtime";
 import {
   confirmInvestmentPayment,
   decideInvestmentRequest,
@@ -19,7 +18,6 @@ export function useInvestmentRequests(investorId?: string) {
     queryKey,
     queryFn: () => listInvestmentRequests(investorId),
   });
-  useRealtimeTable("investment_requests", queryKey);
 
   const request = useMutation({
     mutationFn: requestInvestment,

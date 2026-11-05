@@ -3,7 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
-import { useRealtimeTable } from "@/lib/realtime";
 import {
   approveOrder,
   confirmReceipt,
@@ -22,7 +21,6 @@ export function useCustomerOrders(customerId: string | undefined) {
     enabled: Boolean(customerId),
     queryFn: () => listCustomerOrders(customerId as string),
   });
-  useRealtimeTable("orders", queryKey);
 
   const create = useMutation({
     mutationFn: placeOrder,
@@ -49,7 +47,6 @@ export function useAllOrders() {
   const client = useQueryClient();
   const queryKey = queryKeys.orders();
   const query = useQuery({ queryKey, queryFn: listAllOrders });
-  useRealtimeTable("orders", queryKey);
 
   const price = useMutation({
     mutationFn: ({

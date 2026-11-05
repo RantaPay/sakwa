@@ -3,7 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
-import { useRealtimeTable } from "@/lib/realtime";
 import { applyReturnCycle, listReturns } from "./returns";
 
 export function useReturns(investorId?: string) {
@@ -13,7 +12,6 @@ export function useReturns(investorId?: string) {
     queryKey,
     queryFn: () => listReturns(investorId),
   });
-  useRealtimeTable("investor_returns", queryKey);
 
   const apply = useMutation({
     mutationFn: applyReturnCycle,

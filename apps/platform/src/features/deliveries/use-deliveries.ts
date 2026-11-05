@@ -3,7 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
-import { useRealtimeTable } from "@/lib/realtime";
 import {
   decideDelivery,
   listAgentDeliveries,
@@ -19,7 +18,6 @@ export function useAgentDeliveries(agentId: string | undefined) {
     enabled: Boolean(agentId),
     queryFn: () => listAgentDeliveries(agentId as string),
   });
-  useRealtimeTable("agent_deliveries", queryKey);
 
   const create = useMutation({
     mutationFn: recordDelivery,
@@ -41,7 +39,6 @@ export function useWarehouseDeliveries() {
     queryKey,
     queryFn: listWarehouseDeliveries,
   });
-  useRealtimeTable("agent_deliveries", queryKey);
 
   const decide = useMutation({
     mutationFn: decideDelivery,

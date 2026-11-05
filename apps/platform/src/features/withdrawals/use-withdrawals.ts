@@ -3,7 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
-import { useRealtimeTable } from "@/lib/realtime";
 import {
   confirmWithdrawalReceived,
   decideWithdrawal,
@@ -19,7 +18,6 @@ export function useWithdrawals(investorId?: string) {
     queryKey,
     queryFn: () => listWithdrawals(investorId),
   });
-  useRealtimeTable("withdrawal_requests", queryKey);
 
   const request = useMutation({
     mutationFn: requestWithdrawal,
@@ -45,7 +43,11 @@ export function useWithdrawals(investorId?: string) {
     }) => decideWithdrawal(id, status, userId, reason),
     onSuccess: (_value, variables) => {
       void client.invalidateQueries({ queryKey: queryKeys.withdrawals() });
-      toast.success(variables.status === "accepted" ? "Request accepted. Pay the investor, then upload the receipt." : "Request turned down.");
+      toast.success(
+        variables.status === "accepted"
+          ? "Request accepted. Pay the investor, then upload the receipt."
+          : "Request turned down.",
+      );
     },
     onError: (error: Error) => toast.error(error.message),
   });

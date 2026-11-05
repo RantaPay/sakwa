@@ -3,7 +3,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { queryKeys } from "@/lib/query-keys";
-import { useRealtimeTable } from "@/lib/realtime";
 import {
   listAdvances,
   payAgentRequest,
@@ -18,7 +17,6 @@ export function useAdvances(agentId?: string) {
     queryKey,
     queryFn: () => listAdvances(agentId),
   });
-  useRealtimeTable("agent_cash_advances", queryKey);
 
   const create = useMutation({
     mutationFn: recordAdvance,
