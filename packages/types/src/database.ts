@@ -321,6 +321,27 @@ type PublicSchema = {
       };
       Update: Partial<Database["public"]["Tables"]["investments"]["Insert"]>;
     };
+    house_capital: {
+      Row: {
+        id: string;
+        kind: string;
+        amount_kobo: number;
+        invested_on: string;
+        notes: string | null;
+        recorded_by: string;
+        created_at: string;
+      };
+      Insert: {
+        id: string;
+        kind: string;
+        amount_kobo: number;
+        invested_on: string;
+        notes?: string | null;
+        recorded_by: string;
+        created_at?: string;
+      };
+      Update: Partial<Database["public"]["Tables"]["house_capital"]["Insert"]>;
+    };
     investor_returns: {
       Row: {
         id: string;
@@ -550,16 +571,97 @@ type PublicSchema = {
       Row: {
         id: string;
         weekly_interest_bps: number;
+        default_kg_per_bag: number;
         updated_by: string | null;
         updated_at: string;
       };
       Insert: {
         id: string;
         weekly_interest_bps: number;
+        default_kg_per_bag?: number;
         updated_by?: string | null;
         updated_at?: string;
       };
       Update: Partial<Database["public"]["Tables"]["house_settings"]["Insert"]>;
+    };
+    warehouse_prices: {
+      Row: {
+        id: string;
+        warehouse_id: string;
+        buying_price_per_kg_kobo: number;
+        selling_price_per_kg_kobo: number;
+        effective_on: string;
+        notes: string | null;
+        recorded_by: string;
+        created_at: string;
+      };
+      Insert: {
+        id: string;
+        warehouse_id: string;
+        buying_price_per_kg_kobo: number;
+        selling_price_per_kg_kobo: number;
+        effective_on: string;
+        notes?: string | null;
+        recorded_by: string;
+        created_at?: string;
+      };
+      Update: Partial<Database["public"]["Tables"]["warehouse_prices"]["Insert"]>;
+    };
+    store_entries: {
+      Row: {
+        id: string;
+        warehouse_id: string;
+        entry_on: string;
+        bags_sold: number | null;
+        kg_sold: number | null;
+        bags_bought: number | null;
+        kg_bought: number | null;
+        source: string;
+        fingerprint: string | null;
+        buying_price_per_kg_kobo: number;
+        selling_price_per_kg_kobo: number;
+        sales_kobo: number;
+        expense_kobo: number;
+        profit_kobo: number;
+        notes: string | null;
+        recorded_by: string;
+        created_at: string;
+      };
+      Insert: {
+        id: string;
+        warehouse_id: string;
+        entry_on: string;
+        bags_sold?: number | null;
+        kg_sold?: number | null;
+        bags_bought?: number | null;
+        kg_bought?: number | null;
+        source: string;
+        fingerprint?: string | null;
+        buying_price_per_kg_kobo: number;
+        selling_price_per_kg_kobo: number;
+        sales_kobo: number;
+        expense_kobo: number;
+        profit_kobo: number;
+        notes?: string | null;
+        recorded_by: string;
+        created_at?: string;
+      };
+      Update: Partial<Database["public"]["Tables"]["store_entries"]["Insert"]>;
+    };
+    import_layouts: {
+      Row: {
+        id: string;
+        signature: string;
+        mapping: Json;
+        created_at: string;
+      };
+      Insert: {
+        id: string;
+        signature: string;
+        mapping: Json;
+        created_at?: string;
+      };
+      Update: Partial<Database["public"]["Tables"]["import_layouts"]["Insert"]>;
     };
     audit_log: {
       Row: {

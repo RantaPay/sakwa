@@ -6,6 +6,8 @@ export {
 } from "./investments";
 export { useInvestments, usePosition } from "./use-investments";
 export { InvestmentForm } from "./investment-form";
+export { HouseCapitalForm } from "./house-capital-form";
+export { listHouseCapital } from "./house-capital";
 export { InvestmentList } from "./investment-list";
 export { GrowthChart } from "./growth-chart";
 export { PositionChart } from "./position-chart";

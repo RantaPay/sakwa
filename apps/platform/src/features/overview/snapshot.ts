@@ -1,6 +1,10 @@
 import { listAgentBalances } from "@/features/advances";
 import { listWarehouseDeliveries } from "@/features/deliveries";
-import { listInvestmentRequests, listPositions } from "@/features/investments";
+import {
+  listHouseCapital,
+  listInvestmentRequests,
+  listPositions,
+} from "@/features/investments";
 import { listPayments, listTransactions } from "@/features/money";
 import { listAllOrders } from "@/features/orders";
 import { listStock, listWarehouses } from "@/features/stock";
@@ -33,6 +37,7 @@ export async function loadSystemSnapshot() {
     positions,
     capitalRequests,
     audit,
+    houseCapital,
   ] = await Promise.all([
     listUsers(),
     listWarehouses(),
@@ -46,20 +51,32 @@ export async function loadSystemSnapshot() {
     listPositions(),
     listInvestmentRequests(),
     listAudit(8),
+    listHouseCapital(),
   ]);
 
   const names = new Map(stores.map((row) => [row.id, row.name]));
   const bagsOnHand = stock.reduce((sum, row) => sum + Number(row.bags_on_hand ?? 0), 0);
   const bagsIn = stock.reduce((sum, row) => sum + Number(row.bags_in ?? 0), 0);
   const bagsOut = stock.reduce((sum, row) => sum + Number(row.bags_out ?? 0), 0);
-  const cashWithBuyers = balances.reduce((sum, row) => sum + Number(row.balance_kobo ?? 0), 0);
+  const cashWithBuyers = balances.reduce(
+    (sum, row) => sum + Number(row.balance_kobo ?? 0),
+    0,
+  );
   const moneyIn = transactions
     .filter((row) => row.direction === "incoming")
     .reduce((sum, row) => sum + Number(row.amount_kobo ?? 0), 0);
   const moneyOut = transactions
     .filter((row) => row.direction === "outgoing")
     .reduce((sum, row) => sum + Number(row.amount_kobo ?? 0), 0);
-  const capitalIn = positions.reduce((sum, row) => sum + Number(row.capital_kobo ?? 0), 0);
+  const investorCapital = positions.reduce(
+    (sum, row) => sum + Number(row.capital_kobo ?? 0),
+    0,
+  );
+  const houseCapitalKobo = houseCapital.reduce(
+    (sum, row) => sum + Number(row.amount_kobo ?? 0),
+    0,
+  );
+  const capitalIn = investorCapital + houseCapitalKobo;
 
   const orderStatus = {
     placed: orders.filter((row) => row.status === "placed").length,
@@ -87,6 +104,8 @@ export async function loadSystemSnapshot() {
     moneyOut,
     payments: payments.length,
     capitalIn,
+    investorCapital,
+    houseCapitalKobo,
     personNames: people.map((row) => ({ id: row.id, name: row.full_name })),
     storeRows: stock.map((row) => ({
       id: row.warehouse_id,

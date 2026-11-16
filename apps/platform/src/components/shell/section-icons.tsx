@@ -10,6 +10,7 @@ import {
   Bell,
   ChartBar,
   ChartLine,
+  Calculator,
   ChartPie,
   ChartLineUp,
   ChatCircle,
@@ -48,6 +49,7 @@ const MARKS: Record<string, Icon> = {
   trade: ChartLine,
   trade_store: ChartLineUp,
   buying_price: Scales,
+  calculator: Calculator,
   cash_given: HandCoins,
   agent_pay: HandCoins,
   order_desk: ClipboardText,
@@ -129,6 +131,7 @@ const ADMIN_HREF: Record<string, Icon> = {
   "/admin/audit": ClockCounterClockwise,
   "/admin/profile": User,
   "/admin/accounts": UsersThree,
+  "/admin/calculator": Calculator,
 };
 
 const ROLE_HOME = /^\/(admin|director|accountant|warehouse|agent|investor|customer)\/?$/;

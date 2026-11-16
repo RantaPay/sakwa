@@ -1,7 +1,13 @@
-import { bookDay, deliveryTotalKg, formatNaira, lineTotalKobo, priceForDay } from "@sakwa/utils";
+import {
+  bookDay,
+  deliveryTotalKg,
+  formatNaira,
+  lineTotalKobo,
+  priceForDay,
+} from "@sakwa/utils";
 import { listAdvances, listAgentBalances } from "@/features/advances";
 import { listWarehouseDeliveries } from "@/features/deliveries";
-import { listInvestments } from "@/features/investments";
+import { listHouseCapital, listInvestments } from "@/features/investments";
 import { listPayments, listTransactions } from "@/features/money";
 import { listAllOrders } from "@/features/orders";
 import { listMarketPrices } from "@/features/prices/market-prices";
@@ -43,7 +49,11 @@ export type AnalyticsReport = {
   customers: PersonRollup[];
 };
 
-function nameOf(names: Map<string, string>, id: string | null | undefined, fallback: string) {
+function nameOf(
+  names: Map<string, string>,
+  id: string | null | undefined,
+  fallback: string,
+) {
   if (!id) return fallback;
   return names.get(id) ?? fallback;
 }
@@ -59,6 +69,7 @@ export async function loadAnalytics(): Promise<AnalyticsReport> {
     transactions,
     advances,
     investments,
+    houseCapital,
     withdrawals,
     returns,
     balances,
@@ -72,6 +83,7 @@ export async function loadAnalytics(): Promise<AnalyticsReport> {
     listTransactions(),
     listAdvances(),
     listInvestments(),
+    listHouseCapital(),
     listWithdrawals(),
     listReturns(),
     listAgentBalances(),
@@ -181,6 +193,19 @@ export async function loadAnalytics(): Promise<AnalyticsReport> {
     });
   }
 
+  for (const row of houseCapital) {
+    lines.push({
+      id: `house-${row.id}`,
+      date: bookDay(row.invested_on),
+      group: "cash",
+      direction: "in",
+      title: row.kind === "initial" ? "Initial capital" : "Other investment",
+      who: "The house",
+      detail: row.notes || "Not investor capital",
+      amountKobo: Number(row.amount_kobo),
+    });
+  }
+
   for (const row of returns) {
     lines.push({
       id: `ret-${row.id}`,
@@ -224,7 +249,10 @@ export async function loadAnalytics(): Promise<AnalyticsReport> {
   const cashOutKobo = lines
     .filter((row) => row.group === "cash" && row.direction === "out")
     .reduce((sum, row) => sum + row.amountKobo, 0);
-  const investorInterestKobo = returns.reduce((sum, row) => sum + Number(row.amount_kobo), 0);
+  const investorInterestKobo = returns.reduce(
+    (sum, row) => sum + Number(row.amount_kobo),
+    0,
+  );
 
   const spentByAgent = new Map<string, number>();
   const deliveriesByAgent = new Map<string, number>();
@@ -238,7 +266,10 @@ export async function loadAnalytics(): Promise<AnalyticsReport> {
   }
   const givenByAgent = new Map<string, number>();
   for (const row of advances) {
-    givenByAgent.set(row.agent_id, (givenByAgent.get(row.agent_id) ?? 0) + Number(row.amount_kobo));
+    givenByAgent.set(
+      row.agent_id,
+      (givenByAgent.get(row.agent_id) ?? 0) + Number(row.amount_kobo),
+    );
   }
   const agentIds = new Set<string>([
     ...balances.map((row) => row.agent_id),
@@ -252,15 +283,27 @@ export async function loadAnalytics(): Promise<AnalyticsReport> {
     const order = orderById.get(row.order_id);
     const customerId = order?.customer_id;
     if (!customerId) continue;
-    paidByCustomer.set(customerId, (paidByCustomer.get(customerId) ?? 0) + Number(row.amount_kobo));
+    paidByCustomer.set(
+      customerId,
+      (paidByCustomer.get(customerId) ?? 0) + Number(row.amount_kobo),
+    );
   }
   const bagsByCustomer = new Map<string, number>();
   const ordersByCustomer = new Map<string, number>();
   for (const row of orders) {
-    ordersByCustomer.set(row.customer_id, (ordersByCustomer.get(row.customer_id) ?? 0) + 1);
-    bagsByCustomer.set(row.customer_id, (bagsByCustomer.get(row.customer_id) ?? 0) + Number(row.bag_count));
+    ordersByCustomer.set(
+      row.customer_id,
+      (ordersByCustomer.get(row.customer_id) ?? 0) + 1,
+    );
+    bagsByCustomer.set(
+      row.customer_id,
+      (bagsByCustomer.get(row.customer_id) ?? 0) + Number(row.bag_count),
+    );
   }
-  const customerIds = new Set<string>([...ordersByCustomer.keys(), ...paidByCustomer.keys()]);
+  const customerIds = new Set<string>([
+    ...ordersByCustomer.keys(),
+    ...paidByCustomer.keys(),
+  ]);
 
   return {
     expenseKobo,

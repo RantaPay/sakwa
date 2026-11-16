@@ -1,6 +1,7 @@
 import { bookDay, formatNaira, toLagosDateTime } from "@sakwa/utils";
 import { listAdvances } from "@/features/advances";
 import { listWarehouseDeliveries } from "@/features/deliveries";
+import { listHouseCapital, listInvestments } from "@/features/investments";
 import { listPayments, listTransactions } from "@/features/money";
 import { listMovements } from "@/features/stock";
 
@@ -54,11 +55,15 @@ export async function downloadStoreDay(warehouseIds?: string[] | null) {
 }
 
 export async function downloadAccountantDay() {
-  const [transactions, advances, payments] = await Promise.all([
-    listTransactions(),
-    listAdvances(),
-    listPayments(),
-  ]);
+  const [transactions, advances, payments, investments, houseCapital] = await Promise.all(
+    [
+      listTransactions(),
+      listAdvances(),
+      listPayments(),
+      listInvestments(),
+      listHouseCapital(),
+    ],
+  );
   const day = today();
   const rows: string[][] = [["When", "Kind", "Amount", "Note"]];
   for (const row of transactions) {
@@ -85,6 +90,24 @@ export async function downloadAccountantDay() {
     rows.push([
       toLagosDateTime(row.created_at),
       "Customer payment",
+      formatNaira(row.amount_kobo),
+      row.notes || "",
+    ]);
+  }
+  for (const row of investments) {
+    if (bookDay(row.invested_on) !== day) continue;
+    rows.push([
+      row.invested_on,
+      "Investor capital",
+      formatNaira(row.amount_kobo),
+      row.notes || "",
+    ]);
+  }
+  for (const row of houseCapital) {
+    if (bookDay(row.invested_on) !== day) continue;
+    rows.push([
+      row.invested_on,
+      row.kind === "initial" ? "Initial capital" : "Other investment",
       formatNaira(row.amount_kobo),
       row.notes || "",
     ]);

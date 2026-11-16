@@ -18,6 +18,7 @@ export {
   type DayPrice,
 } from "./pricing";
 export { profitKobo } from "./profit";
+export { tradeLine, type TradeLine, type TradeLineInput } from "./trade-line";
 export {
   calculateInvestorReturn,
   type ReturnFormulaKind,

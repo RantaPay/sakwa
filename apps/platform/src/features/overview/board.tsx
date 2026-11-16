@@ -23,15 +23,14 @@ import { queryKeys } from "@/lib/query-keys";
 import { describeAudit } from "./audit-copy";
 import { loadSystemSnapshot } from "./snapshot";
 
-function Shell({
-  className,
-  children,
-}: {
-  className?: string;
-  children: ReactNode;
-}) {
+function Shell({ className, children }: { className?: string; children: ReactNode }) {
   return (
-    <div className={cn("rounded-[1.75rem] border border-border/70 bg-bezel p-1.5", className)}>
+    <div
+      className={cn(
+        "rounded-[1.75rem] border border-border/70 bg-bezel p-1.5",
+        className,
+      )}
+    >
       <div className="flex h-full min-h-[13.5rem] flex-col rounded-[calc(1.75rem-0.375rem)] bg-surface p-6 shadow-[inset_0_1px_1px_rgb(255_255_255_/_0.85)] sm:p-7">
         {children}
       </div>
@@ -104,7 +103,9 @@ export function OverviewBoard() {
     queryFn: loadSystemSnapshot,
   });
   const data = snapshot.data;
-  const names = new Map((data?.personNames ?? []).map((person) => [person.id, person.name]));
+  const names = new Map(
+    (data?.personNames ?? []).map((person) => [person.id, person.name]),
+  );
   const maxBags = Math.max(1, ...(data?.storeRows.map((row) => row.bags) ?? [1]));
 
   return (
@@ -112,7 +113,9 @@ export function OverviewBoard() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 xl:gap-5">
         <Shell className="rise">
           <div className="flex items-start justify-between gap-3">
-            <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted">Rice on hand</p>
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+              Rice on hand
+            </p>
             <Mark icon={Grains} />
           </div>
           <p className="mt-3 font-sans text-6xl font-semibold tabular-nums tracking-tight">
@@ -121,17 +124,31 @@ export function OverviewBoard() {
           <p className="mt-2 text-base text-muted">bags across every store</p>
           <div className="mt-auto grid grid-cols-2 gap-4 pt-6">
             <div className="flex items-start gap-2">
-              <ArrowLineDown size={20} weight="light" className="mt-0.5 shrink-0 text-primary" aria-hidden />
+              <ArrowLineDown
+                size={20}
+                weight="light"
+                className="mt-0.5 shrink-0 text-primary"
+                aria-hidden
+              />
               <div>
                 <p className="text-xs uppercase tracking-[0.16em] text-muted">Taken in</p>
-                <p className="mt-1 font-sans text-xl font-semibold tabular-nums">{data?.bagsIn ?? 0}</p>
+                <p className="mt-1 font-sans text-xl font-semibold tabular-nums">
+                  {data?.bagsIn ?? 0}
+                </p>
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <ArrowLineUp size={20} weight="light" className="mt-0.5 shrink-0 text-primary" aria-hidden />
+              <ArrowLineUp
+                size={20}
+                weight="light"
+                className="mt-0.5 shrink-0 text-primary"
+                aria-hidden
+              />
               <div>
                 <p className="text-xs uppercase tracking-[0.16em] text-muted">Sent out</p>
-                <p className="mt-1 font-sans text-xl font-semibold tabular-nums">{data?.bagsOut ?? 0}</p>
+                <p className="mt-1 font-sans text-xl font-semibold tabular-nums">
+                  {data?.bagsOut ?? 0}
+                </p>
               </div>
             </div>
           </div>
@@ -186,11 +203,18 @@ export function OverviewBoard() {
         <Shell className="rise rise-delay-3 xl:col-span-8">
           <div className="flex items-center gap-3">
             <Mark icon={Coins} />
-            <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted">Money on the books</p>
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+              Money on the books
+            </p>
           </div>
           <div className="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-3">
             <div className="flex items-start gap-2">
-              <ArrowLineDown size={20} weight="light" className="mt-0.5 shrink-0 text-primary" aria-hidden />
+              <ArrowLineDown
+                size={20}
+                weight="light"
+                className="mt-0.5 shrink-0 text-primary"
+                aria-hidden
+              />
               <div>
                 <p className="text-sm text-muted">In</p>
                 <p className="mt-1 font-sans text-3xl font-semibold tabular-nums">
@@ -199,7 +223,12 @@ export function OverviewBoard() {
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <ArrowLineUp size={20} weight="light" className="mt-0.5 shrink-0 text-primary" aria-hidden />
+              <ArrowLineUp
+                size={20}
+                weight="light"
+                className="mt-0.5 shrink-0 text-primary"
+                aria-hidden
+              />
               <div>
                 <p className="text-sm text-muted">Out</p>
                 <p className="mt-1 font-sans text-3xl font-semibold tabular-nums">
@@ -208,11 +237,20 @@ export function OverviewBoard() {
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <PiggyBank size={20} weight="light" className="mt-0.5 shrink-0 text-primary" aria-hidden />
+              <PiggyBank
+                size={20}
+                weight="light"
+                className="mt-0.5 shrink-0 text-primary"
+                aria-hidden
+              />
               <div>
                 <p className="text-sm text-muted">Capital in</p>
                 <p className="mt-1 font-sans text-3xl font-semibold tabular-nums">
                   {formatNaira(data?.capitalIn ?? 0)}
+                </p>
+                <p className="mt-1 text-xs text-muted">
+                  Investors {formatNaira(data?.investorCapital ?? 0)} · House{" "}
+                  {formatNaira(data?.houseCapitalKobo ?? 0)}
                 </p>
               </div>
             </div>
@@ -224,8 +262,14 @@ export function OverviewBoard() {
               const total = Math.max(1, inn + out);
               return (
                 <>
-                  <span className="h-full bg-primary" style={{ width: `${(inn / total) * 100}%` }} />
-                  <span className="h-full bg-accent" style={{ width: `${(out / total) * 100}%` }} />
+                  <span
+                    className="h-full bg-primary"
+                    style={{ width: `${(inn / total) * 100}%` }}
+                  />
+                  <span
+                    className="h-full bg-accent"
+                    style={{ width: `${(out / total) * 100}%` }}
+                  />
                 </>
               );
             })()}
@@ -233,9 +277,19 @@ export function OverviewBoard() {
           <p className="mt-2 text-sm text-muted">Green is money in. Gold is money out.</p>
         </Shell>
         <Shell className="rise rise-delay-3 xl:col-span-4">
-          <Tile href="/admin/users" label="People" value={`${data?.people ?? 0}`} icon={UsersThree} />
+          <Tile
+            href="/admin/users"
+            label="People"
+            value={`${data?.people ?? 0}`}
+            icon={UsersThree}
+          />
           <div className="my-5 h-px bg-border" />
-          <Tile href="/admin/warehouses" label="Stores" value={`${data?.stores ?? 0}`} icon={Storefront} />
+          <Tile
+            href="/admin/warehouses"
+            label="Stores"
+            value={`${data?.stores ?? 0}`}
+            icon={Storefront}
+          />
         </Shell>
       </div>
 
@@ -243,7 +297,9 @@ export function OverviewBoard() {
         <Shell className="rise xl:col-span-7">
           <div className="flex items-center gap-3">
             <Mark icon={Storefront} />
-            <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted">Stock by store</p>
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+              Stock by store
+            </p>
           </div>
           <ul className="mt-5 space-y-4">
             {(data?.storeRows ?? []).length === 0 ? (
@@ -273,7 +329,9 @@ export function OverviewBoard() {
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <Mark icon={ClockCounterClockwise} />
-              <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted">Recent history</p>
+              <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+                Recent history
+              </p>
             </div>
             <a
               href="/admin/audit"
@@ -289,9 +347,14 @@ export function OverviewBoard() {
               (data?.audit ?? []).map((row) => {
                 const copy = describeAudit(row, names);
                 return (
-                  <li key={row.id} className="rounded-2xl border border-border bg-white p-4">
+                  <li
+                    key={row.id}
+                    className="rounded-2xl border border-border bg-white p-4"
+                  >
                     <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted">
-                      {new Date(row.created_at).toLocaleDateString("en-NG", { timeZone: "Africa/Lagos" })}
+                      {new Date(row.created_at).toLocaleDateString("en-NG", {
+                        timeZone: "Africa/Lagos",
+                      })}
                     </p>
                     <p className="mt-1 font-semibold">{copy.title}</p>
                     <p className="mt-1 text-sm text-muted">{copy.detail}</p>

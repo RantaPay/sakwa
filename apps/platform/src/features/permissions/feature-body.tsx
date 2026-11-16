@@ -12,6 +12,7 @@ import {
 import { DeliveryDecisionList, DeliveryForm, DeliveryList } from "@/features/deliveries";
 import { EnquiryList } from "@/features/enquiries";
 import {
+  HouseCapitalForm,
   InvestmentForm,
   InvestmentList,
   InvestmentRequestList,
@@ -332,10 +333,11 @@ export function FeatureBody({
           <PageHeading
             mark="capital"
             title="Capital"
-            body="Write in the amount each investor put in."
+            body="Write in the amount each investor put in. House capital is kept separate below."
           />
           <InvestmentForm />
           <InvestmentList />
+          <HouseCapitalForm />
         </div>
       );
     case "profit_requests":
