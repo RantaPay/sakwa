@@ -7,6 +7,7 @@ import { useState } from "react";
 import { PageHeading } from "@/components/page-heading";
 import { HouseCapitalForm } from "@/features/investments/house-capital-form";
 import { useAuthUser } from "@/lib/use-auth-user";
+import { queryKeys } from "@/lib/query-keys";
 import {
   loadCalculatorBase,
   saveEntries,
@@ -28,6 +29,11 @@ export function CalculatorBoard() {
 
   async function refresh() {
     await client.invalidateQueries({ queryKey: ["calculator"] });
+    await client.invalidateQueries({ queryKey: queryKeys.warehouses });
+    await client.invalidateQueries({ queryKey: queryKeys.systemSnapshot });
+    await client.invalidateQueries({ queryKey: ["trade-books"] });
+    await client.invalidateQueries({ queryKey: queryKeys.analytics });
+    await client.invalidateQueries({ queryKey: queryKeys.stock });
   }
 
   return (

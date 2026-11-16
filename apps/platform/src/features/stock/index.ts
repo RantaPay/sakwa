@@ -7,6 +7,7 @@ export {
   listWarehouses,
   closeWarehouse,
   createWarehouse,
+  ensureWarehouse,
   assignStaff,
   listWarehouseStaff,
   listAssignedWarehouseIds,

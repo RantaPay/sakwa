@@ -1,8 +1,9 @@
 "use client";
 
-import { Button } from "@sakwa/ui";
+import { Button, Field, Input } from "@sakwa/ui";
 import { formatNaira, lagosToday, tradeLine } from "@sakwa/utils";
 import { useMemo, useState } from "react";
+import { ensureWarehouse } from "@/features/stock";
 import { rateForStore } from "./data";
 import { parseGrid, type SheetRow } from "./parse-sheet";
 
@@ -104,12 +105,19 @@ export function buildEntry(
   };
 }
 
+function suggestStoreName(name: string) {
+  const key = name.toLowerCase().replace(/[^a-z0-9]+/g, "");
+  if (!key || /^(sheet\d*|book\d*|workbook|file|data)$/.test(key)) return "";
+  return name.trim();
+}
+
 function matchStore(name: string, stores: { id: string; name: string }[]) {
   const key = name.toLowerCase().replace(/[^a-z0-9]+/g, "");
   return (
     stores.find((store) => store.name.toLowerCase().replace(/[^a-z0-9]+/g, "") === key) ??
     stores.find((store) => {
       const storeKey = store.name.toLowerCase().replace(/[^a-z0-9]+/g, "");
+      if (key.length < 3 || storeKey.length < 3) return false;
       return key.includes(storeKey) || storeKey.includes(key);
     })
   );
@@ -135,6 +143,10 @@ export function SheetUpload({
   const [rows, setRows] = useState<SheetRow[]>([]);
   const [signature, setSignature] = useState("");
   const [error, setError] = useState("");
+  const [added, setAdded] = useState<{ id: string; name: string }[]>([]);
+  const [pending, setPending] = useState<{ detected: string; name: string }[]>([]);
+  const [saving, setSaving] = useState(false);
+  const known = useMemo(() => [...stores, ...added], [stores, added]);
   const ready = useMemo(() => rows.filter((row) => row.status === "ready"), [rows]);
 
   async function onFile(file: File) {
@@ -165,7 +177,57 @@ export function SheetUpload({
     });
     setSignature(found);
     setRows(collected);
+    setPending([]);
     if (collected.length === 0) setError("No heading row was found.");
+  }
+
+  function draftsFor(
+    list: { id: string; name: string }[],
+    source: SheetRow[],
+  ): { drafts: EntryDraft[] } | { error: string } {
+    const drafts: EntryDraft[] = [];
+    const seen = new Map<string, number>();
+    for (const row of source) {
+      const store = matchStore(row.storeName, list);
+      if (!store) return { error: `No store matches "${row.storeName}".` };
+      const form = new FormData();
+      form.set("store", store.id);
+      form.set("day", row.entryOn);
+      const key = `${store.id}|${row.entryOn}|${row.bagsSold}|${row.kgSold}|${row.bagsBought}|${row.kgBought}`;
+      const occurrence = (seen.get(key) ?? 0) + 1;
+      seen.set(key, occurrence);
+      const built = buildEntry(form, kgPerBag, house, storePrices, "import", {
+        bagsSold: row.bagsSold,
+        kgSold: row.kgSold,
+        bagsBought: row.bagsBought,
+        kgBought: row.kgBought,
+        amount: row.amount,
+        occurrence,
+      });
+      if ("error" in built) return { error: `Row ${row.rowNumber}: ${built.error}` };
+      drafts.push(built);
+    }
+    return { drafts };
+  }
+
+  async function createMissing(names: { detected: string; name: string }[]) {
+    const next = [...known];
+    const renames = new Map<string, string>();
+    for (const item of names) {
+      const typed = item.name.trim();
+      if (typed.length < 2) throw new Error("Enter a store name for each sheet.");
+      const store = await ensureWarehouse(typed);
+      if (!next.some((row) => row.id === store.id)) next.push(store);
+      renames.set(item.detected, store.name);
+    }
+    const renamed = rows.map((row) => {
+      const name = renames.get(row.storeName);
+      return name ? { ...row, storeName: name } : row;
+    });
+    setAdded(next.filter((store) => !stores.some((row) => row.id === store.id)));
+    setRows(renamed);
+    setPending([]);
+    return { stores: next, rows: renamed.filter((row) => row.status === "ready") };
   }
 
   return (
@@ -197,48 +259,100 @@ export function SheetUpload({
               <li key={`${row.rowNumber}-${row.storeName}`}>
                 Row {row.rowNumber}:{" "}
                 {row.status === "ready"
-                  ? `${row.storeName} · ${row.bagsSold ?? 0} bags · ${row.kgSold ?? 0} kg`
+                  ? `${row.storeName}${matchStore(row.storeName, known) ? "" : " · new store"} · ${row.bagsSold ?? 0} bags · ${row.kgSold ?? 0} kg`
                   : row.reason}
               </li>
             ))}
           </ul>
-          <Button
-            className="mt-4"
-            type="button"
-            onClick={() => {
-              const drafts: EntryDraft[] = [];
-              const seen = new Map<string, number>();
-              for (const row of ready) {
-                const store = matchStore(row.storeName, stores);
-                if (!store) {
-                  setError(`No store matches "${row.storeName}".`);
+          {pending.length > 0 ? (
+            <form
+              className="mt-4 grid gap-3"
+              action={async (formData) => {
+                const names = pending.map((item, index) => ({
+                  detected: item.detected,
+                  name: String(formData.get(`store-${index}`) ?? ""),
+                }));
+                setSaving(true);
+                setError("");
+                try {
+                  const created = await createMissing(names);
+                  const result = draftsFor(created.stores, created.rows);
+                  if ("error" in result) {
+                    setError(result.error);
+                    return;
+                  }
+                  await onSave(result.drafts, signature, {});
+                  setRows([]);
+                } catch (err) {
+                  setError(
+                    err instanceof Error ? err.message : "Could not create the store.",
+                  );
+                } finally {
+                  setSaving(false);
+                }
+              }}
+            >
+              <p className="text-sm font-semibold">These names are not stores yet.</p>
+              <p className="text-sm text-muted">
+                Type the store name. The store is created, then every row for it is
+                calculated and saved.
+              </p>
+              {pending.map((item, index) => (
+                <Field
+                  key={item.detected}
+                  label={`Store for ${item.detected}`}
+                  htmlFor={`new-store-${index}`}
+                >
+                  <Input
+                    id={`new-store-${index}`}
+                    name={`store-${index}`}
+                    defaultValue={item.name}
+                    required
+                  />
+                </Field>
+              ))}
+              <Button type="submit" disabled={saving}>
+                {saving ? "Saving" : "Create the store and save"}
+              </Button>
+            </form>
+          ) : (
+            <Button
+              className="mt-4"
+              type="button"
+              disabled={saving || ready.length === 0}
+              onClick={() => {
+                const missing = [...new Set(ready.map((row) => row.storeName))].filter(
+                  (name) => !matchStore(name, known),
+                );
+                if (missing.length > 0) {
+                  setError("");
+                  setPending(
+                    missing.map((detected) => ({
+                      detected,
+                      name: suggestStoreName(detected),
+                    })),
+                  );
                   return;
                 }
-                const form = new FormData();
-                form.set("store", store.id);
-                form.set("day", row.entryOn);
-                const key = `${store.id}|${row.entryOn}|${row.bagsSold}|${row.kgSold}|${row.bagsBought}|${row.kgBought}`;
-                const occurrence = (seen.get(key) ?? 0) + 1;
-                seen.set(key, occurrence);
-                const built = buildEntry(form, kgPerBag, house, storePrices, "import", {
-                  bagsSold: row.bagsSold,
-                  kgSold: row.kgSold,
-                  bagsBought: row.bagsBought,
-                  kgBought: row.kgBought,
-                  amount: row.amount,
-                  occurrence,
-                });
-                if ("error" in built) {
-                  setError(`Row ${row.rowNumber}: ${built.error}`);
+                const result = draftsFor(known, ready);
+                if ("error" in result) {
+                  setError(result.error);
                   return;
                 }
-                drafts.push(built);
-              }
-              void onSave(drafts, signature, {});
-            }}
-          >
-            Save ready rows
-          </Button>
+                setSaving(true);
+                void onSave(result.drafts, signature, {})
+                  .then(() => setRows([]))
+                  .catch((err: unknown) => {
+                    setError(
+                      err instanceof Error ? err.message : "Could not save the rows.",
+                    );
+                  })
+                  .finally(() => setSaving(false));
+              }}
+            >
+              {saving ? "Saving" : "Save ready rows"}
+            </Button>
+          )}
         </>
       ) : null}
     </section>

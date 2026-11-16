@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@sakwa/ui";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useAuthUser } from "@/lib/use-auth-user";
+import { queryKeys } from "@/lib/query-keys";
 import { loadCalculatorBase, saveEntries, saveLayout } from "./data";
 import { SheetUpload } from "./sheet-upload";
 
@@ -49,6 +50,11 @@ export function HeaderUpload() {
                   `${result.added} rows added. ${result.skipped} already in the books.`,
                 );
                 await client.invalidateQueries({ queryKey: ["calculator"] });
+                await client.invalidateQueries({ queryKey: queryKeys.warehouses });
+                await client.invalidateQueries({ queryKey: queryKeys.systemSnapshot });
+                await client.invalidateQueries({ queryKey: ["trade-books"] });
+                await client.invalidateQueries({ queryKey: queryKeys.analytics });
+                await client.invalidateQueries({ queryKey: queryKeys.stock });
               }}
             />
           </div>
