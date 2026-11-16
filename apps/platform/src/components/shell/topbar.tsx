@@ -5,6 +5,7 @@ import { ROLE_HOME, ROLE_LABEL, type Role } from "@sakwa/types";
 import { Button } from "@sakwa/ui";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { HeaderUpload } from "@/features/calculator/header-upload";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { useUiStore } from "@/lib/ui-store";
 
@@ -47,6 +48,7 @@ export function Topbar({
         ) : null}
       </div>
       <div className="flex items-center gap-2">
+        {activeRole === "admin" ? <HeaderUpload /> : null}
         {roles.length > 1
           ? roles.map((role) => (
               <Link
